@@ -220,3 +220,4 @@ def update(frame):
 
 ani = FuncAnimation(fig, update, frames=P.steps, interval=40, blit=False)
 plt.show()
+
