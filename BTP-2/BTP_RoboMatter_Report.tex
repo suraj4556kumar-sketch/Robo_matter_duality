@@ -54,7 +54,7 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{6pt}
 \setlength{\headheight}{14pt}
-\captionsetup{font=small,labelfont=bf}
+\captionsetup{font=normalsize,labelfont=bf}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -107,6 +107,8 @@
   coltitle=Ink
 }
 
+\newcommand{\runin}[1]{\vspace{0.45em}\noindent\textbf{#1.}\ }
+
 \lstdefinestyle{pythonstyle}{
   language=Python,
   basicstyle=\ttfamily\small,
@@ -129,8 +131,8 @@
 \newcommand{\supervisor}{Prof. Pintu Patra}
 \newcommand{\department}{Department of Physics}
 \newcommand{\institute}{Indian Institute of Technology Kharagpur}
-\newcommand{\semester}{Spring Semester, 2025--26}
-\newcommand{\submissiondate}{May 1, 2026}
+\newcommand{\semester}{Spring Semester 2026}
+\newcommand{\submissiondate}{1 May 2026}
 \newcommand{\btptwogithub}{https://github.com/suraj4556kumar-sketch/Robo_matter_duality/tree/main/BTP-2}
 
 \begin{document}
@@ -186,7 +188,7 @@
 \addcontentsline{toc}{chapter}{Declaration}
 I certify that the work contained in this report has been carried out by me under the guidance of my supervisor. The work has not been submitted to any other institute for any degree or diploma. I have conformed to the norms and guidelines given in the Ethical Code of Conduct of the Institute.
 
-Whenever I have used material from other sources, including research papers, theoretical analysis, figures, computational ideas, and text, I have given due credit through citations and references. The simulations, interpretations, and analysis presented in this report are based on the computational work and material collected for this Bachelor Thesis Project.
+Whenever I have used material from other sources, including research papers, theoretical analysis, figures, computational ideas, and text, I have given due credit through citations and references. The thesis text has been written in my own words, and project-generated figures have been identified as simulation outputs. The simulations, interpretations, and analysis presented in this report are based on the computational work and material collected for this Bachelor Thesis Project.
 
 \vspace{1.5cm}
 \begin{tabularx}{\textwidth}{@{}X r@{}}
@@ -255,7 +257,7 @@ Overall, the work shows that a simplified physics-inspired model can capture sev
 % ------------------------------------------------------------
 \chapter{Introduction}
 
-\section{Background of the Study}
+\section{Research Context, Motivation, and Scope}
 Conventional materials are usually designed to perform a fixed function after fabrication. A crystalline solid may be strong, a polymer may be flexible, and a composite may be lightweight, but the internal building blocks of such materials generally do not make decisions, process information, or actively rearrange after deployment. This limitation has motivated the development of smart and active materials, where the material can respond to external stimuli such as light, temperature, mechanical loading, or chemical signals.
 
 Active matter extends this idea further. It consists of many units that consume energy locally and convert it into motion or mechanical work. Examples include bacterial colonies, active colloids, vibrated granular particles, micro-swimmers, and robotic swarms. Unlike passive materials, active matter can organize itself far from equilibrium, generating clusters, vortices, waves, swirls, and coherent collective motion.
@@ -266,12 +268,10 @@ Robo-Matter is a recent concept that connects active matter with swarm robotics.
 The project treats Robo-Matter as a many-body physics problem: if simple Magbot-like particles are given active motion, chirality, tunable magnetic binding, and light-field activation, then collective phases and material-like behavior can emerge without prescribing global order.
 \end{keybox}
 
-\section{Motivation}
 There is growing interest in materials that can adapt, heal, migrate, and change shape. Potential examples include protective surfaces that repair damage, robotic matter that navigates confined environments, microrobotic carriers for targeted transport, and modular systems that assemble into useful shapes on demand. Direct experimental construction of such systems can be expensive and technically challenging. A computational model is therefore valuable because it allows controlled variation of physical parameters and helps isolate the mechanisms responsible for observed behavior.
 
 The motivation of this project is to understand how rich collective dynamics can arise from a minimal set of physically interpretable rules. Instead of modelling every hardware detail of a real Magbot, this work constructs a simplified active magnetic disk system. The simulation preserves the essential ingredients: circular bodies, multiple magnetic sites, chirality, light-dependent activity, torque, steric exclusion, and environmental control.
 
-\section{Problem Statement}
 The broad problem addressed in this report is:
 
 \begin{quote}
@@ -280,52 +280,37 @@ The broad problem addressed in this report is:
 
 This problem requires a model that is simple enough to simulate and interpret, but detailed enough to include both translational and rotational effects. It also requires analysis metrics that distinguish structural order from dynamic rearrangement.
 
-\section{Scope of the Study}
-The scope of the project is limited to two-dimensional simulations of rigid circular Magbot-like particles. The study focuses on the following aspects:
+The scope of the project is limited to two-dimensional simulations of rigid circular Magbot-like particles. Within this scope, the work develops a particle-level model with body motion, chirality, internal magnet phases, light-field coupling, magnetic interaction, and steric collision handling. The model is then used to simulate 100--150 interacting Magbots, identify active glass-like, active-crystal, liquid-like, and gas-like regimes, and interpret these regimes using local topological order and nearest-neighbor change rate. The comparison with experimental Robo-Matter is qualitative and mechanism-focused, because the present model is not a hardware-level replica of the full experimental platform.
 
-\begin{itemize}[leftmargin=1.5cm]
-  \item Construction of a particle-level model containing body motion, chirality, internal magnet phases, light-field coupling, and magnetic interactions.
-  \item Simulation of 100--150 interacting Magbots under different activity and magnetic-binding regimes.
-  \item Identification of active glass-like, active crystal, liquid-like, and gas-like collective states.
-  \item Analysis using local topological order and nearest-neighbor change rate.
-  \item Comparison of the computational model with the qualitative mechanisms reported in experimental Robo-Matter literature.
-\end{itemize}
-
-\section{Report Organization}
-Chapter 2 reviews the relevant literature on active matter, Robo-Matter, and Magbot systems. Chapter 3 explains the rationale and research gap. Chapter 4 lists the objectives. Chapter 5 presents the model and numerical methods. Chapter 6 develops the theoretical basis of the dynamics and phase competition. Chapter 7 discusses the results. Chapter 8 concludes the report and suggests future work. Appendices provide parameter tables, derivations, algorithmic details, and source-code structure.
+The report first introduces the research area and literature, then states the rationale and objectives, presents the proposed model, analyzes the results, and closes with limitations and future directions. The appendices keep implementation details, parameter tables, and source-file information separate from the main narrative.
 
 % ------------------------------------------------------------
 % Chapter 2
 % ------------------------------------------------------------
 \chapter{Literature Review}
 
-\section{Smart and Active Materials}
+\section{Relevant Literature and Research Gap}
 Smart materials respond to external stimuli by changing measurable properties such as shape, stiffness, optical response, or conductivity. Their importance lies in their ability to move beyond the static role of traditional materials. Active matter, by contrast, is defined by the continuous local consumption of energy by its constituents. This energy consumption drives the system away from thermal equilibrium and produces emergent collective states.
 
 Active matter has been reviewed extensively in the context of colloids, bacteria, cell tissues, and synthetic swimmers \cite{marchetti2013hydrodynamics,bechinger2016active}. A common theme across these systems is that simple individual-level rules can generate large-scale order. Unlike equilibrium matter, where phases are determined by free-energy minimization, active phases are governed by an interplay among drive, interaction, noise, confinement, and dissipation.
 
-\section{Robo-Matter Concept}
+\runin{Robo-Matter concept}
 Robo-Matter combines ideas from active matter, smart materials, and robot swarms. The experimental system of Wang \textit{et al.} uses micro-robotic building blocks called Magbots \cite{wang2024robomatter}. These units are equipped with active rotation, magnetic binding sites, photosensitive control, and interaction with a programmable light field. The system is not simply a robot swarm, because it can also behave like a material with crystal-like, liquid-like, glass-like, and gas-like states. It is also not simply a passive material, because it can process environmental cues and actively reorganize.
 
-\subsection{Matter-Like Behaviors}
-The matter-like aspect of Robo-Matter appears in collective self-organization. Magbots can assemble into ordered structures, form active crystals, reorganize under changed activation, and display phase-like transitions. The experimental paper reports active glass-like, active crystal, liquid-like, and gas-like states, controlled primarily by the competition between activation strength and magnetic binding strength \cite{wang2024robomatter}.
+The matter-like aspect of Robo-Matter appears in collective self-organization. Magbots can assemble into ordered structures, form active crystals, reorganize under changed activation, and display phase-like transitions. The same experimental work reports active glass-like, active-crystal, liquid-like, and gas-like states controlled primarily by the competition between activation strength and magnetic binding strength \cite{wang2024robomatter}. The robot-like aspect appears when Magbot assemblies respond to programmed light patterns. Reported demonstrations include active force output, smart healing, morphing, infiltration through barriers, cargo search, and robust operation under partial unit failure. These functions require information exchange between the building blocks and the environment; in the experiment this is achieved through camera tracking, an LED platform, and light-sensitive Magbot response \cite{wang2024robomatter}.
 
-\subsection{Robot-Like Behaviors}
-The robot-like aspect appears when Magbot assemblies respond to programmed light patterns. Reported demonstrations include active force output, smart healing, morphing, infiltration through barriers, cargo search, and robust operation under partial unit failure. These functions require information exchange between the building blocks and the environment. In the experiment, this is achieved through camera tracking, an LED platform, and light-sensitive Magbot response.
-
-\section{Active Brownian and Chiral Particle Models}
+\runin{Active Brownian and chiral particle models}
 The Active Brownian Particle (ABP) model is a standard theoretical description of self-propelled particles. In its simplest form, each particle moves with a constant speed along an orientation vector that undergoes rotational diffusion. Chiral active particles include an additional intrinsic angular velocity, causing curved or circular motion \cite{liebchen2017chiral}. Such models are useful because they capture persistent motion, orientational decorrelation, ballistic-to-diffusive crossover, and collective effects under interaction.
 
 The present project uses an ABP-inspired framework but extends it in three ways. First, the particles possess multiple magnetic sites instead of simple isotropic attraction. Second, each magnetic site has an internal phase variable that can rotate. Third, the particle activity is coupled to a moving Gaussian light field, mimicking programmable external activation.
 
-\section{Computational Modelling of Robotic Swarms}
+\runin{Computational modelling of robotic swarms}
 Robotic-swarm simulations often emphasize communication, control laws, and task execution. Active-matter simulations emphasize physical interaction, noise, and emergent collective dynamics. Robo-Matter sits between these traditions. For this reason, the present simulation adopts a physics-first approach: it does not prescribe a desired global structure, but allows local forces and torques to produce organization.
 
 \begin{notebox}{Why simulation matters}
 Experiments demonstrate what Robo-Matter can do. Simulation helps answer why it happens: which terms in the equations promote binding, which terms melt order, how light-field modulation acts like activation, and how torque couples local magnet alignment to whole-body rotation.
 \end{notebox}
 
-\section{Research Gap}
 The experimental literature demonstrates Robo-Matter using physical Magbots and a sophisticated feedback platform. However, a beginner-friendly computational model that connects the experimental idea to explicit equations of motion is useful for learning and further exploration. The gap addressed here is the development and interpretation of a compact, physics-based simulation that reproduces key qualitative phase regimes while remaining transparent enough to modify.
 
 % ------------------------------------------------------------
@@ -333,23 +318,13 @@ The experimental literature demonstrates Robo-Matter using physical Magbots and 
 % ------------------------------------------------------------
 \chapter{Rationale of the Study}
 
-\section{Why This Study Matters}
+\section{Rationale and Novelty}
 Robo-Matter provides a route to materials that can change their structure and function after deployment. Understanding such systems requires a blend of mechanics, statistical physics, nonlinear dynamics, and robotics. A computational study is especially appropriate because the phase behavior depends on many coupled parameters: activity, attraction, density, noise, chirality, confinement, and light control.
 
 This project matters because it transforms the Robo-Matter idea from a qualitative concept into an explicit simulation model. The model allows one to ask: what happens if magnetic attraction is increased? What if the light field is stronger? What if the box is made larger? What if rotation becomes faster? These questions are difficult to answer from static figures alone but can be explored through parameter sweeps.
 
-\section{Computational Advantages}
-The simulation approach provides several advantages:
+The novelty of this BTP work is not the invention of Robo-Matter itself, which is credited to the recent experimental literature \cite{wang2024robomatter}. The contribution is a compact computational realization in which each Magbot-like body has six magnetic sites, active propulsion, chirality, light-dependent activation, internal magnet phase dynamics, and torque coupling. The simulation is deliberately transparent: every important physical contribution appears as a term in the update equations, while the cell-list method keeps neighbor detection efficient enough for 100--150 particles. This makes the model useful for testing how separate mechanisms such as attraction, noise, density, and light modulation influence the final collective state.
 
-\begin{itemize}[leftmargin=1.5cm]
-  \item \textbf{Controlled parameters:} each physical mechanism can be varied independently.
-  \item \textbf{Repeatability:} identical random seeds allow direct comparison between cases.
-  \item \textbf{Observability:} all particle positions, orientations, forces, and magnet phases are available.
-  \item \textbf{Efficiency:} cell-list neighbor search avoids unnecessary all-to-all interaction checks.
-  \item \textbf{Extendibility:} additional light fields, chirality distributions, boundary conditions, and metrics can be added.
-\end{itemize}
-
-\section{Core Physical Competition}
 The central competition in the model is between activation and magnetic binding:
 
 \begin{equation}
@@ -368,24 +343,30 @@ The same interaction rules can generate different material states. The observed 
 % ------------------------------------------------------------
 \chapter{Objectives}
 
-The objectives of the project are:
+The objective of this project is to build and interpret a physics-based simulation of Robo-Matter inspired by Magbot systems. The study begins from the experimental idea of active magnetic robotic building blocks \cite{wang2024robomatter}, translates the relevant mechanisms into a two-dimensional active-particle model, and then uses the model to study phase-like organization.
 
-\begin{enumerate}[leftmargin=1.5cm]
-  \item To study the concept of Robo-Matter and identify the essential physical mechanisms behind Magbot-based collective behavior.
-  \item To construct a two-dimensional simulation of active magnetic Magbot-like particles.
-  \item To include chiral rotation, self-propulsion, light-controlled speed, light-gradient drift, steric repulsion, magnetic attraction, body torque, and internal magnet phase torque.
-  \item To implement efficient neighbor detection using a cell-list method.
-  \item To generate and compare representative active glass-like, active crystal, liquid-like, and gas-like regimes.
-  \item To analyze phase-like behavior using local topological order and nearest-neighbor change rate.
-  \item To connect the computational observations with experimental Robo-Matter behavior reported in the literature.
-\end{enumerate}
+\begin{table}[H]
+\centering
+\caption{Research objectives of the BTP work.}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{4.2cm}X}
+\toprule
+Objective area & Implementation in this project \\
+\midrule
+Model construction & A two-dimensional Magbot-like particle model is built with active translation, chiral rotation, light-dependent activation, six magnetic sites, internal magnet phases, magnetic torque, and steric repulsion. \\
+Computational method & A cell-list neighbor search is used so that magnetic and contact interactions are evaluated locally rather than through unnecessary all-pair checks. \\
+Phase study & Representative active glass-like, active-crystal, liquid-like, and gas-like regimes are generated by changing activity, attraction, density, and interaction range. \\
+Analysis & Local topological order and nearest-neighbor change rate are used to distinguish structural ordering from dynamic rearrangement. \\
+Literature connection & The simulated mechanisms and phase terminology are compared qualitatively with the Robo-Matter experiments of Wang \textit{et al.} \cite{wang2024robomatter}. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 % ------------------------------------------------------------
 % Chapter 5
 % ------------------------------------------------------------
 \chapter{Materials and Methods}
 
-\section{System Design Overview}
+\section{Model Formulation}
 The simulation represents Robo-Matter as a collection of rigid circular particles in a square two-dimensional domain. Each particle is a Magbot-like unit with a body center, body angle, and six magnetic sites arranged around its perimeter. The system is evolved using an overdamped discrete-time update, appropriate for a strongly dissipative robotic or granular environment where inertia is not the dominant modelling feature.
 
 \begin{figure}[H]
@@ -415,11 +396,11 @@ The simulation represents Robo-Matter as a collection of rigid circular particle
   \node at (0,-1.35) {\small six magnetic sites on a rigid active disk};
   \node at (0,-1.72) {\small self-propulsion, chirality, magnetic torque, and light response};
 \end{tikzpicture}
-\caption{Schematic of the simulated Magbot model. Each disk has a body orientation, six magnetic sites, active propulsion, magnetic interactions, and response to a moving light field.}
+\caption{Schematic of the simulated Magbot model. The drawing was prepared for this report; the six-site active magnetic body and light-field control idea are conceptually inspired by the Robo-Matter Magbot system reported in Ref.~\cite{wang2024robomatter}.}
 \label{fig:schematic}
 \end{figure}
 
-\section{State Variables}
+\runin{State variables}
 For the $i$th Magbot, the main state variables are:
 
 \begin{equation}
@@ -446,7 +427,7 @@ R_{\mathrm{ring}}
 \alpha_k = \frac{2\pi(k-1)}{N_{\mathrm{mag}}}.
 \end{equation}
 
-\section{Light Field}
+\runin{Light field}
 The simulation uses a Gaussian light field to represent a programmable activation pattern. For a light center $\mathbf{x}_L(t)$, the intensity at position $\mathbf{x}$ is
 
 \begin{equation}
@@ -476,7 +457,7 @@ v_i = v_{\mathrm{base}} + \gamma I_i,
 
 where $\chi_i=-1$ denotes clockwise rotation and $\chi_i=+1$ denotes counterclockwise rotation.
 
-\section{Light-Gradient Drift}
+\runin{Light-gradient drift}
 The model includes a simplified drift toward brighter regions:
 
 \begin{equation}
@@ -493,7 +474,7 @@ I_{\mathrm{spot}}
 
 This rule is not intended as a full electromechanical model of the real photoresistor-motor coupling. It is a compact way to represent light-guided activation and migration.
 
-\section{Magnetic Interaction}
+\runin{Magnetic interaction}
 Each Magbot has six magnetic sites. For a pair of magnetic sites separated by vector $\mathbf{r}$ and distance $r$, the simulation uses the simplified interaction energy
 
 \begin{equation}
@@ -528,7 +509,7 @@ When a magnetic force acts away from the body center, it also creates body torqu
 \tau_{\mathrm{body}} = \mathbf{r}_{\mathrm{lever}}\times\mathbf{F}.
 \end{equation}
 
-\section{Steric Repulsion and Collision Handling}
+\runin{Steric repulsion and collision handling}
 To prevent unphysical overlap, a hard-core repulsive force is applied when two disks overlap. If $d_{ij}$ is the center-to-center distance,
 
 \begin{equation}
@@ -539,7 +520,7 @@ To prevent unphysical overlap, a hard-core repulsive force is applied when two d
 
 After force-based integration, the code also performs direct overlap resolution through a few sweeps. This improves numerical stability in dense configurations.
 
-\section{Equations of Motion}
+\runin{Equations of motion}
 The overdamped translational update is
 
 \begin{equation}
@@ -575,7 +556,7 @@ The internal magnet phase update is
 +\sqrt{2D_\phi\Delta t}\,\zeta_{ik}.
 \end{equation}
 
-\section{Boundary Conditions}
+\section{Numerical Implementation and Analysis}
 The main simulations use reflecting square boundaries. If a particle crosses a vertical wall, its orientation is reflected as
 
 \begin{equation}
@@ -590,23 +571,23 @@ If it crosses a horizontal wall,
 
 The position is clipped inside the simulation box. This mimics elastic reflection at rigid boundaries.
 
-\section{Cell-List Neighbor Search}
+\runin{Cell-list neighbor search}
 Direct pairwise interaction checking scales as $O(N^2)$ and becomes inefficient for large $N$. The simulation therefore divides the domain into cells whose side length is comparable to the interaction cutoff. Each particle checks only particles in its own cell and neighboring cells. This keeps the interaction search efficient while preserving local pair detection.
 
 \begin{keybox}{Computational design choice}
 The cell-list method is important because the model contains both body-level and site-level interactions. Without local neighbor filtering, checking all possible site pairs for all Magbot pairs would become unnecessarily expensive.
 \end{keybox}
 
-\section{Analysis Metrics}
+\runin{Analysis metrics}
 The results are analyzed using two complementary metrics.
 
-\subsection{Local Topological Order}
+\runin{Local topological order}
 The local topological order parameter measures the degree of local structural organization. A high value indicates a stable neighborhood arrangement or locally ordered structure. In the plots generated for this project, a threshold line near $0.30$ separates low-order gas-like or fluid-like states from more ordered regimes.
 
-\subsection{Nearest-Neighbor Change Rate}
+\runin{Nearest-neighbor change rate}
 The nearest-neighbor change rate $n_c$ measures how frequently the local neighborhood of particles changes. A low value indicates arrested or solid-like behavior, while a high value indicates frequent bond breaking and rearrangement. In the plots, a threshold line near $n_c=5$ is used as a practical separator between relatively stable and actively reorganizing structures.
 
-\section{Parameter Sets}
+\section{Simulation Cases}
 Representative parameter choices used in the project are summarized in Table~\ref{tab:phaseparams}. These values are extracted from the simulation scripts in the \texttt{states} folder.
 
 \begin{longtable}{>{\raggedright\arraybackslash}p{3.0cm}cccccc}
@@ -632,7 +613,7 @@ Gas-like & 100 & 28.0 & 10.00 & 10.00 & 0.80 & 0.80 \\
 % ------------------------------------------------------------
 \chapter{Theory}
 
-\section{Active Brownian Motion}
+\section{Active Brownian and Chiral Motion}
 A minimal active Brownian particle has the dynamics
 
 \begin{equation}
@@ -645,7 +626,7 @@ A minimal active Brownian particle has the dynamics
 
 At short times, the particle keeps its direction and motion is approximately ballistic. At long times, rotational diffusion destroys directional memory and the motion becomes diffusive. This crossover is central to active matter.
 
-\section{Chiral Active Motion}
+\runin{Chiral extension}
 For a chiral particle, an intrinsic angular velocity is added:
 
 \begin{equation}
@@ -660,7 +641,7 @@ R_{\mathrm{circle}} = \frac{v_0}{|\omega|}.
 
 In the Robo-Matter simulation, chirality is important because Magbots in the experimental system rotate due to vibration motors and tilted brushes. The sign of $\omega$ controls clockwise or counterclockwise motion.
 
-\section{Mean Squared Displacement}
+\runin{Mean squared displacement}
 Although the primary project plots focus on structural order and neighbor-change rate, the theoretical mean squared displacement (MSD) remains a useful reference quantity. For a non-chiral ABP in two dimensions,
 
 \begin{equation}
@@ -680,7 +661,7 @@ D_{\mathrm{eff}} = D_t + \frac{v_0^2}{2D_r}.
 
 In interacting Robo-Matter, this simple expression is modified by magnetic binding, confinement, collision, and collective rearrangement. However, the ballistic-to-diffusive idea remains useful for interpreting activity-driven spreading.
 
-\section{Activation Versus Binding}
+\section{Phase Interpretation}
 The phase behavior can be interpreted through a dimensionless qualitative ratio:
 
 \begin{equation}
@@ -706,10 +687,10 @@ Weak binding, high activity & Particles or small clusters roam independently. & 
 \end{tabularx}
 \end{table}
 
-\section{Role of Magnet Symmetry}
+\runin{Role of magnet symmetry}
 Six magnetic sites produce a natural route to local hexagonal or honeycomb-like packing. The fixed body anchors introduce anisotropy: attraction depends not only on distance but also on relative magnet orientation. This makes the model richer than a simple isotropic Lennard-Jones-like attraction. Body torque and internal magnet torque allow local magnetic alignment to influence both individual particle orientation and collective structure.
 
-\section{Relation to Experimental Robo-Matter}
+\runin{Relation to experimental Robo-Matter}
 The experimental paper reports that homogeneous light intensity can play a temperature-like role: stronger light increases Magbot activation and changes collective organization \cite{wang2024robomatter}. In this simulation, the light field increases active speed and rotation rate. Therefore, activity can melt stable clusters, promote reorganization, or disperse the system depending on magnetic binding strength.
 
 % ------------------------------------------------------------
@@ -717,12 +698,12 @@ The experimental paper reports that homogeneous light intensity can play a tempe
 % ------------------------------------------------------------
 \chapter{Results and Discussion}
 
-\section{Overview of Observed Regimes}
+\section{Phase-State Results}
 The simulation produces four representative phase-like regimes. They are not thermodynamic phases in the strict equilibrium sense; they are nonequilibrium collective states distinguished by local order, bond rearrangement, density, and activity.
 
 \begin{table}[H]
 \centering
-\caption{Interpretation of simulated phase-like regimes.}
+\caption{Interpretation of the simulated phase-like regimes. The phase names follow the Robo-Matter terminology introduced in Ref.~\cite{wang2024robomatter}, while the signatures reported here are obtained from this project's simulations.}
 \label{tab:phaseinterpretation}
 \begin{tabularx}{\textwidth}{>{\bfseries}p{3.0cm}X X}
 \toprule
@@ -736,13 +717,13 @@ Gas-like & Low topological order and mostly separated particles or small cluster
 \end{tabularx}
 \end{table}
 
-\section{Active Crystal Phase}
+\runin{Active crystal phase}
 The active crystal simulation uses strong magnetic binding and sufficiently high motion to allow reorganization. Figure~\ref{fig:activecrystal} shows that the local topological order rises rapidly from a low value to above $0.8$ and remains high for most of the simulated time. The nearest-neighbor change rate initially spikes, corresponding to active rearrangement and defect correction, but then decreases below the threshold line.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.92\textwidth]{active_crystal_phase.png}
-\caption{Active crystal regime. The local topological order rapidly becomes high, while the nearest-neighbor change rate decreases after initial rearrangement. This indicates formation of a stable ordered active structure.}
+\caption{Project-generated active-crystal simulation output. The local topological order rapidly becomes high, while the nearest-neighbor change rate decreases after initial rearrangement. The phase label is used in the qualitative sense of Ref.~\cite{wang2024robomatter}.}
 \label{fig:activecrystal}
 \end{figure}
 
@@ -750,58 +731,44 @@ The active crystal simulation uses strong magnetic binding and sufficiently high
 The active crystal is produced when magnetic binding is strong but the system still has enough motion to anneal defects. In physical terms, activity is not merely destructive; at moderate levels it helps the system escape local disorder and settle into a more ordered state.
 \end{resultbox}
 
-\section{Active Glass-Like Phase}
+\runin{Active glass-like phase}
 The active glass-like case corresponds to strong attraction and low activity. Figure~\ref{fig:activeglass} shows a gradual increase in order and a decay of neighbor changes. The key distinction from an ideal active crystal is that rearrangement becomes suppressed before the system can fully explore configuration space. This is characteristic of a kinetically arrested state.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.92\textwidth]{active_glass_like.png}
-\caption{Active glass-like regime. The system develops local organization, but the nearest-neighbor change rate decays strongly, indicating arrested dynamics and reduced ability to reorganize.}
+\caption{Project-generated active glass-like simulation output. The system develops local organization, but the nearest-neighbor change rate decays strongly, indicating arrested dynamics and reduced ability to reorganize. The phase label follows the qualitative terminology of Ref.~\cite{wang2024robomatter}.}
 \label{fig:activeglass}
 \end{figure}
 
 In the Robo-Matter interpretation, the glass-like state is not simply ``low order.'' It may contain local order but lacks sufficient rearrangement to remove defects or produce a clean crystalline structure. This agrees with the general physical idea that glassiness is associated with kinetic arrest.
 
-\section{Liquid-Like Phase}
+\runin{Liquid-like phase}
 The liquid-like simulation uses activity comparable to magnetic binding. Figure~\ref{fig:liquidlike} shows that local order grows gradually and eventually crosses the practical threshold, but the neighbor-change rate remains large and fluctuating. This is the defining signature of liquid-like behavior: local coordination exists, but bonds do not remain fixed.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.92\textwidth]{liquid_like.png}
-\caption{Liquid-like regime. Local order develops only gradually, while the nearest-neighbor change rate remains substantial. The system has transient structure but persistent rearrangement.}
+\caption{Project-generated liquid-like simulation output. Local order develops only gradually, while the nearest-neighbor change rate remains substantial. The phase label is used by analogy with the Robo-Matter regimes reported in Ref.~\cite{wang2024robomatter}.}
 \label{fig:liquidlike}
 \end{figure}
 
 The liquid-like state is important because it demonstrates that collective organization need not be static. The particles can form temporary clusters and networks while continuously exchanging neighbors. This is similar to ordinary liquids, but here the motion is sustained by active drive rather than thermal equilibrium alone.
 
-\section{Gas-Like Phase}
+\runin{Gas-like phase}
 In the gas-like regime, activity is high and magnetic attraction is weak. Figure~\ref{fig:gaslike} shows that the local topological order remains near zero and well below the threshold. Neighbor-change rate fluctuates because particles continue to encounter and separate from one another, but sustained binding is absent.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.92\textwidth]{gas_like_phase.png}
-\caption{Gas-like regime. The order parameter remains very low, indicating absence of stable collective organization. Motion and weak binding lead to dispersed, disordered behavior.}
+\caption{Project-generated gas-like simulation output. The order parameter remains very low, indicating absence of stable collective organization. Motion and weak binding lead to dispersed, disordered behavior. The phase label follows the qualitative framework of Ref.~\cite{wang2024robomatter}.}
 \label{fig:gaslike}
 \end{figure}
 
-\section{Comparison of Four Regimes}
-Figure~\ref{fig:phasepanel} places the four generated plots in a single visual comparison. This panel summarizes the main simulation result: changing the balance between activity, binding, and density changes the emergent Robo-Matter state.
+\section{Comparative Interpretation}
+Figures~\ref{fig:activecrystal}--\ref{fig:gaslike} use the same visual format, axes, and diagnostic quantities, so they can be compared directly without shrinking the plots into a small multi-panel layout. The main simulation result is that changing the balance between activity, binding, and density changes the emergent Robo-Matter state.
 
-\begin{figure}[H]
-\centering
-\begin{tabular}{cc}
-\includegraphics[width=0.47\textwidth]{active_glass_like.png} &
-\includegraphics[width=0.47\textwidth]{active_crystal_phase.png} \\
-(a) Active glass-like & (b) Active crystal \\
-\includegraphics[width=0.47\textwidth]{liquid_like.png} &
-\includegraphics[width=0.47\textwidth]{gas_like_phase.png} \\
-(c) Liquid-like & (d) Gas-like
-\end{tabular}
-\caption{Comparison of representative simulated Robo-Matter regimes. The plots use local topological order and nearest-neighbor change rate to distinguish ordered, arrested, fluid, and dispersed behavior.}
-\label{fig:phasepanel}
-\end{figure}
-
-\section{Interpretation Using Order and Dynamics}
+\runin{Interpretation using order and dynamics}
 The two selected metrics should be interpreted together. A high order parameter alone does not prove that the system is a good crystal, because a jammed state may also have local order. Similarly, a high neighbor-change rate alone does not prove disorder, because a liquid may have local structure while still rearranging. The useful classification is obtained by combining them:
 
 \begin{table}[H]
@@ -820,7 +787,7 @@ Low order, low $n_c$ & Frozen disordered state or insufficient motion. & Deep gl
 \end{tabularx}
 \end{table}
 
-\section{Physical Mechanism of Transitions}
+\runin{Physical mechanism of transitions}
 The transition sequence can be understood as:
 
 \begin{equation}
@@ -837,33 +804,15 @@ The transition sequence can be understood as:
 
 The first transition is subtle. A small increase in activity can improve order by allowing particles to escape trapped local configurations. However, too much activity breaks bonds faster than they can stabilize, producing liquid-like or gas-like behavior.
 
-\section{Comparison with Experimental Robo-Matter}
+\runin{Comparison with experimental Robo-Matter}
 The computational results are qualitatively consistent with the experimental Robo-Matter phase concept. In the experimental system, homogeneous light intensity affects Magbot rotation speed and plays a temperature-like role, while magnetic binding stabilizes assemblies \cite{wang2024robomatter}. The present simulation reproduces the same conceptual competition. It also includes a moving light field, allowing light-guided drift and activity modulation.
 
 Important differences remain. The simulation does not model motor electronics, brush friction, real magnetic rod geometry, camera feedback, LED pixel control, or exact contact mechanics. Therefore, numerical values should not be interpreted as direct experimental predictions. The value of the model lies in mechanism-level understanding.
 
-\section{Strengths of the Model}
-The model has several strengths:
+\section{Model Assessment}
+The model is useful because it is physically interpretable: every term in the update rule corresponds to activity, force, torque, noise, or environmental control. It includes both translational and rotational dynamics, treats the internal magnet phases as active variables rather than fixed labels, reproduces four distinct collective regimes under parameter changes, and remains extendable because local neighbor search keeps the computation manageable.
 
-\begin{itemize}[leftmargin=1.5cm]
-  \item It is physically interpretable: every term in the update rule corresponds to activity, force, torque, noise, or environmental control.
-  \item It contains both translational and rotational dynamics.
-  \item It includes internal magnet phase dynamics, not only fixed attraction.
-  \item It can reproduce four distinct collective regimes using parameter changes.
-  \item It uses efficient local neighbor search.
-  \item It is easy to extend for future parameter sweeps or feedback control.
-\end{itemize}
-
-\section{Limitations of the Model}
-The present model also has limitations:
-
-\begin{itemize}[leftmargin=1.5cm]
-  \item The magnetic potential is simplified and not a full dipole-field calculation.
-  \item Friction, vibration motor dynamics, and contact mechanics are represented only phenomenologically.
-  \item The light-field drift is a control approximation rather than a detailed photo-electromechanical model.
-  \item The order metrics are useful but not sufficient for complete phase classification.
-  \item Long-time statistical averaging and multiple random seeds are needed for stronger quantitative claims.
-\end{itemize}
+The model is also deliberately simplified. The magnetic potential is not a full dipole-field calculation, friction and vibration-motor dynamics are represented phenomenologically, and the light-field drift is a compact control approximation rather than a detailed photo-electromechanical model. The order metrics are useful for this first study, but stronger quantitative phase classification would require longer simulations, multiple random seeds, additional structural metrics, and direct comparison with experimental datasets.
 
 \section{Discussion}
 The main scientific outcome of the project is the demonstration that Robo-Matter-like behavior can be generated from simple local rules. The simulations support the idea that active robotic materials should be understood as nonequilibrium many-body systems. Activity is not only a source of disorder; it can also enable reconfiguration, defect repair, and transition between states. Magnetic binding is not only a source of stability; if too strong relative to motion, it can arrest the system in a glass-like configuration. The useful operating regime for adaptive material behavior lies between these extremes.
@@ -873,38 +822,15 @@ The main scientific outcome of the project is the demonstration that Robo-Matter
 % ------------------------------------------------------------
 \chapter{Conclusion}
 
-\section{Summary}
+\section{Summary, Limitations, and Future Directions}
 This project developed a two-dimensional simulation framework for Robo-Matter inspired by active magnetic Magbot systems. Each Magbot was represented as a rigid circular disk with six magnetic sites, chiral rotation, active translational motion, light-field modulation, magnetic force, internal magnet torque, body torque, noise, steric repulsion, and reflecting boundaries. The simulation was implemented in Python and used cell-list neighbor search for efficiency.
 
 The report followed the structure of a formal thesis study: introduction, literature review, rationale, objectives, methods, theory, results, discussion, conclusion, references, and appendices. The core results were organized around four phase-like regimes: active glass-like, active crystal, liquid-like, and gas-like.
 
-\section{Key Findings}
-\begin{enumerate}[leftmargin=1.5cm]
-  \item Strong magnetic binding and moderate activity support ordered active-crystal-like behavior.
-  \item Strong binding with insufficient rearrangement produces arrested glass-like behavior.
-  \item Activity comparable to binding produces liquid-like states with persistent neighbor exchange.
-  \item Weak binding and high activity produce gas-like dispersed behavior.
-  \item Local topological order and nearest-neighbor change rate together provide a useful diagnostic pair.
-  \item The model captures the central Robo-Matter competition between activation and magnetic ordering.
-\end{enumerate}
+The main findings can be summarized as follows. Strong magnetic binding with moderate activity supports ordered active-crystal-like behavior, whereas strong binding with insufficient rearrangement produces arrested glass-like behavior. When activity and binding become comparable, the system behaves like a liquid-like network in which bonds form and break persistently. When activity is high and magnetic binding is weak, the system becomes gas-like and dispersed. Across these cases, local topological order and nearest-neighbor change rate form a useful diagnostic pair because they separate static order from active rearrangement.
 
-\section{Project Contribution}
-The project contributes a transparent computational platform for studying Robo-Matter. It connects experimental ideas from Magbot-based smart materials with explicit equations of motion and interpretable simulation outputs. The work can serve as a foundation for future studies involving feedback control, automated phase diagrams, collective transport, and adaptive morphing.
+The project contributes a transparent computational platform for studying Robo-Matter. It connects experimental ideas from Magbot-based smart materials with explicit equations of motion and interpretable simulation outputs. Its limitations are the simplified magnetic potential, phenomenological light response, absence of detailed hardware mechanics, and limited statistical sampling. Future work should therefore perform systematic parameter sweeps over magnetic strength, activity, density, and noise; compute additional order parameters such as bond-orientational order, cluster-size distribution, radial distribution function, and MSD; use multiple random seeds; add feedback-controlled light fields; study different magnet symmetries and mixed chirality; and compare simulated phase diagrams more directly with experimental Robo-Matter data.
 
-\section{Future Work}
-Future work can improve and extend the project in several directions:
-
-\begin{itemize}[leftmargin=1.5cm]
-  \item Perform systematic parameter sweeps over $k_m$, $v_{\mathrm{base}}$, $\omega_{\mathrm{base}}$, density, and noise.
-  \item Compute additional order parameters such as bond-orientational order $\psi_6$, cluster-size distribution, radial distribution function, and MSD.
-  \item Use multiple random seeds to obtain statistically reliable phase boundaries.
-  \item Add feedback-controlled light fields that respond to particle positions.
-  \item Model twofold, threefold, and sixfold magnetic-site symmetries separately.
-  \item Study mixed chirality systems containing both clockwise and counterclockwise Magbots.
-  \item Compare simulated phase diagrams more directly with experimental Robo-Matter data.
-\end{itemize}
-
-\section{Final Remarks}
 Robo-Matter is a powerful example of how material behavior can emerge from active, interacting building blocks. This project shows that even a simplified simulation can reproduce meaningful collective regimes and explain them through the balance of activity, magnetic binding, and dynamic rearrangement. The work therefore provides both a computational model and a conceptual bridge between active matter physics and reconfigurable robotic materials.
 
 % ------------------------------------------------------------
@@ -1013,18 +939,7 @@ This expression is implemented through the \texttt{cross2d} helper function in t
 \chapter{Algorithm and Code Structure}
 
 \section{Main Algorithm}
-The simulation follows the computational sequence below:
-
-\begin{enumerate}[leftmargin=1.5cm]
-  \item Initialize Magbot positions, body orientations, chirality values, and internal magnet phases.
-  \item At each time step, compute the current light intensity and light gradient.
-  \item Build a cell list for efficient neighbor detection.
-  \item For nearby Magbot pairs, compute steric repulsion, magnetic forces, body torques, and internal magnet torques.
-  \item Update positions, body angles, and internal magnet phases using Euler-Maruyama integration.
-  \item Apply reflecting boundary conditions and overlap resolution.
-  \item Update visualization elements including bodies, magnets, heading lines, light field, and interaction lines.
-  \item Store or plot order metrics for phase analysis.
-\end{enumerate}
+The simulation begins by initializing Magbot positions, body orientations, chirality values, and internal magnet phases. At every time step, the code computes the local light intensity and light gradient, builds a cell list for neighbor detection, evaluates steric repulsion and magnetic forces for nearby Magbot pairs, and computes the associated body and internal magnet torques. The positions, body angles, and magnet phases are then updated by Euler-Maruyama integration, followed by reflecting-wall handling and overlap resolution. The final part of each update refreshes visualization elements such as bodies, magnets, heading lines, light spots, and interaction lines, while the stored state is used for order and neighbor-change analysis.
 
 \section{Representative Update Pseudocode}
 \begin{lstlisting}[style=pythonstyle,caption={Simplified pseudocode representing the update logic used in the simulation.}]
@@ -1061,7 +976,6 @@ for frame in range(steps):
 \toprule
 File & Role in the report \\
 \midrule
-\texttt{reference\_report.pdf} & Structure, front-matter style, and thesis organization. \\
 \texttt{robo\_matter.pdf} & Explanation of Magbot variables, forces, torque, light field, and parameter meaning. \\
 \texttt{Research Papers/s41467-024-53123-6...pdf} & Primary research paper on experimental Robo-Matter. \\
 \texttt{states/active\_crystal\_phase.py} & Parameter set and code basis for active crystal simulation. \\
@@ -1069,6 +983,7 @@ File & Role in the report \\
 \texttt{states/liquid\_like.py} & Parameter set and code basis for liquid-like simulation. \\
 \texttt{states/gas\_like\_phase.py} & Parameter set and code basis for gas-like simulation. \\
 \texttt{states/*.png} & Figures included in the results section. \\
+\href{\btptwogithub/states/first_video.mp4}{\texttt{states/first\_video.mp4}} & Simulation video stored with the project material. \\
 \href{\btptwogithub}{BTP-2 GitHub folder} & Online repository folder containing the BTP-2 report, code, figures, and supporting material. \\
 \bottomrule
 \end{tabularx}
@@ -1077,14 +992,7 @@ File & Role in the report \\
 \chapter{Phase Notes}
 
 \section{Parameter Influence}
-\begin{itemize}[leftmargin=1.5cm]
-  \item Increasing $k_m$ promotes binding and local order.
-  \item Increasing $r_0$ increases the range over which magnetic sites influence each other.
-  \item Increasing $v_{\mathrm{base}}$ increases translational agitation.
-  \item Increasing $\omega_{\mathrm{base}}$ increases chiral rotation and can destabilize bonds if too large.
-  \item Increasing box size reduces density and suppresses frequent clustering.
-  \item Increasing noise tends to destroy order and promote gas-like behavior.
-\end{itemize}
+The parameter response is consistent with the activation-versus-binding interpretation used throughout the report. Increasing $k_m$ promotes magnetic binding and local order, while increasing $r_0$ makes magnetic sites influence each other over a longer distance. Increasing $v_{\mathrm{base}}$ raises translational agitation, and increasing $\omega_{\mathrm{base}}$ strengthens chiral rotation, which can help rearrangement at moderate values but destabilize bonds when too large. Increasing the box size lowers density and reduces frequent clustering, while stronger noise tends to destroy order and move the system toward gas-like behavior.
 
 \section{Transition Summary}
 \begin{resultbox}{Final phase summary}
