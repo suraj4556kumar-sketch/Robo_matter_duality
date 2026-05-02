@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Wedge
 from matplotlib.animation import FuncAnimation
 import shutil
+import csv
 
 
 # ============================================================
@@ -32,7 +33,7 @@ import shutil
 @dataclass
 class Params:
     # System
-    Nbots: int = 150
+    Nbots: int = 100
     Nmag: int = 6
 
     # Geometry
@@ -45,16 +46,16 @@ class Params:
 
     # Translational motion
     # Increased compared with previous code
-    v_base: float = 0.45
-    v_light_gain: float = 0.10
+    v_base: float = 8.00
+    v_light_gain: float = 0.55
 
     # Light-gradient drift strength
     # This makes bots move toward the bright spot, not only rotate faster there.
     light_drift_strength: float = 1.20
 
     # Chiral rotation
-    omega_base: float = 0.50
-    omega_light_gain: float = 0.40
+    omega_base: float = 7.00
+    omega_light_gain: float = 2.20
 
     # Noise
     Dt: float = 0.012
@@ -67,15 +68,15 @@ class Params:
     mu_phi: float = 1.0
 
     # Magnetic interaction
-    k_m: float = 5.80
-    r0: float = 4.00
-    r_cut: float = 2.00
+    k_m: float = 1.15
+    r0: float = 1.40
+    r_cut: float = 1.45
 
     # Steric repulsion
     k_rep: float = 200.0
 
     # Time
-    dt: float = 0.003
+    dt: float = 0.015
     steps: int = 1600
     seed: int = 7
 
@@ -84,8 +85,8 @@ class Params:
 
     # Light field: "moving_spot", "center_spot", "two_spots", "homogeneous"
     light_mode: str = "moving_spot"
-    light_base: float = 0.25
-    light_amp: float = 0.20
+    light_base: float = 0.15
+    light_amp: float = 0.85
     light_sigma: float = 5.5
     light_period: float = 10.0
 

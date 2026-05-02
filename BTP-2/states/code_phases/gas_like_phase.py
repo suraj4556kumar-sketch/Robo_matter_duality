@@ -41,7 +41,7 @@ class Params:
     r_mag: float = 0.105
 
     # Larger box -> more open space for movement
-    box: float = 28.0
+    box: float = 20.0
 
     # Translational motion
     # Increased compared with previous code

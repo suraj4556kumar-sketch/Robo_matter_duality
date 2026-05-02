@@ -32,7 +32,7 @@ import shutil
 @dataclass
 class Params:
     # System
-    Nbots: int = 170
+    Nbots: int = 120
     Nmag: int = 6
 
     # Geometry
@@ -45,7 +45,7 @@ class Params:
 
     # Translational motion
     # Increased compared with previous code
-    v_base: float = 10.45
+    v_base: float = 0.70
     v_light_gain: float = 0.10
 
     # Light-gradient drift strength
@@ -53,8 +53,8 @@ class Params:
     light_drift_strength: float = 1.20
 
     # Chiral rotation
-    omega_base: float = 6.90
-    omega_light_gain: float = 0.40
+    omega_base: float = 0.60
+    omega_light_gain: float = 0.20
 
     # Noise
     Dt: float = 0.012
@@ -68,8 +68,8 @@ class Params:
 
     # Magnetic interaction
     k_m: float = 10.00
-    r0: float = 5.00
-    r_cut: float = 2.00
+    r0: float = 2.00
+    r_cut: float = 2.80
 
     # Steric repulsion
     k_rep: float = 200.0

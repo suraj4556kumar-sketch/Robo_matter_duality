@@ -32,7 +32,7 @@ import shutil
 @dataclass
 class Params:
     # System
-    Nbots: int = 100
+    Nbots: int = 170
     Nmag: int = 6
 
     # Geometry
@@ -41,20 +41,20 @@ class Params:
     r_mag: float = 0.105
 
     # Larger box -> more open space for movement
-    box: float = 20.0
+    box: float = 17.0
 
     # Translational motion
     # Increased compared with previous code
-    v_base: float = 6.50
-    v_light_gain: float = 0.55
+    v_base: float = 10.45
+    v_light_gain: float = 0.10
 
     # Light-gradient drift strength
     # This makes bots move toward the bright spot, not only rotate faster there.
     light_drift_strength: float = 1.20
 
     # Chiral rotation
-    omega_base: float = 5.80
-    omega_light_gain: float = 2.20
+    omega_base: float = 6.90
+    omega_light_gain: float = 0.40
 
     # Noise
     Dt: float = 0.012
@@ -67,15 +67,15 @@ class Params:
     mu_phi: float = 1.0
 
     # Magnetic interaction
-    k_m: float = 2.50
-    r0: float = 0.95
-    r_cut: float = 2.10
+    k_m: float = 10.00
+    r0: float = 5.00
+    r_cut: float = 2.00
 
     # Steric repulsion
     k_rep: float = 200.0
 
     # Time
-    dt: float = 0.015
+    dt: float = 0.003
     steps: int = 1600
     seed: int = 7
 
@@ -84,8 +84,8 @@ class Params:
 
     # Light field: "moving_spot", "center_spot", "two_spots", "homogeneous"
     light_mode: str = "moving_spot"
-    light_base: float = 0.15
-    light_amp: float = 0.85
+    light_base: float = 0.25
+    light_amp: float = 0.20
     light_sigma: float = 5.5
     light_period: float = 10.0
 

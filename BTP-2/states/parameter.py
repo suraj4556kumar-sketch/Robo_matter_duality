@@ -1,20 +1,19 @@
 """
 100-Magbot Moving Robo-Matter Simulation
+with Order-Parameter Analysis Plot
 ----------------------------------------
 
-This version gives the Magbots more space to move while keeping visible translation and interactions.
+This code keeps the same model and parameters from your uploaded code.
 
-What is changed:
-1. Stronger translational motion.
-2. Light-gradient drift: Magbots move slightly toward the bright light region.
-3. More frequent collisions/interactions by using a slightly smaller box.
-4. Chiral rotation is still present.
-5. Rotation/heading lines are visible.
-6. Magnet interaction lines are visible.
-7. 100 Magbots, each with 6 magnetic sites.
+It does NOT run animation.
+It runs the simulation and draws/saves:
+
+1. local_topological_order_r6.png
+2. neighbor_change_rate_nc.png
+3. magbot_order_metrics.csv
 
 Run:
-    python magbot_100_spacious_moving_with_lines.py
+    python magbot_order_parameter_full_code.py
 """
 
 from dataclasses import dataclass
@@ -23,6 +22,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Wedge
 from matplotlib.animation import FuncAnimation
 import shutil
+import csv
 
 
 # ============================================================
@@ -32,7 +32,7 @@ import shutil
 @dataclass
 class Params:
     # System
-    Nbots: int = 150
+    Nbots: int = 120
     Nmag: int = 6
 
     # Geometry
@@ -45,7 +45,7 @@ class Params:
 
     # Translational motion
     # Increased compared with previous code
-    v_base: float = 10.45
+    v_base: float = 1.10
     v_light_gain: float = 0.10
 
     # Light-gradient drift strength
@@ -53,8 +53,8 @@ class Params:
     light_drift_strength: float = 1.20
 
     # Chiral rotation
-    omega_base: float = 6.90
-    omega_light_gain: float = 0.40
+    omega_base: float = 1.00
+    omega_light_gain: float = 0.20
 
     # Noise
     Dt: float = 0.012
@@ -68,8 +68,8 @@ class Params:
 
     # Magnetic interaction
     k_m: float = 10.00
-    r0: float = 5.00
-    r_cut: float = 2.00
+    r0: float = 1.50
+    r_cut: float = 1.80
 
     # Steric repulsion
     k_rep: float = 200.0
@@ -84,8 +84,8 @@ class Params:
 
     # Light field: "moving_spot", "center_spot", "two_spots", "homogeneous"
     light_mode: str = "moving_spot"
-    light_base: float = 0.25
-    light_amp: float = 0.20
+    light_base: float = 0.15
+    light_amp: float = 0.85
     light_sigma: float = 5.5
     light_period: float = 10.0
 
@@ -537,212 +537,149 @@ def step_dynamics(pos, theta, phi, t):
 
 
 # ============================================================
-# Animation setup
+# Order-parameter tools
 # ============================================================
 
-fig, ax = plt.subplots(figsize=(8.2, 8.2))
-ax.set_xlim(-P.box, P.box)
-ax.set_ylim(-P.box, P.box)
-ax.set_aspect("equal")
-ax.set_xticks([])
-ax.set_yticks([])
-
-title = ax.set_title("100 Spacious Moving Magbots | rotation + interaction lines")
-
-light1 = Circle((0, 0), P.light_sigma, facecolor="yellow",
-                edgecolor="gold", alpha=0.16, zorder=0)
-light2 = Circle((0, 0), P.light_sigma, facecolor="yellow",
-                edgecolor="gold", alpha=0.10, zorder=0)
-ax.add_patch(light1)
-ax.add_patch(light2)
-
-interaction_lines = []
-for _ in range(P.max_interaction_lines):
-    ln, = ax.plot([], [], lw=0.8, color=(0.0, 0.55, 0.0, 0.35), zorder=1.5)
-    interaction_lines.append(ln)
-
-bodies = []
-norths = []
-souths = []
-heading_lines = []
-
-for i in range(P.Nbots):
-    edge_color = "tab:blue" if chirality[i] > 0 else "black"
-
-    body = Circle(
-        tuple(pos[i]),
-        P.R_bot,
-        facecolor="#E8E8FF",
-        edgecolor=edge_color,
-        lw=0.8,
-        zorder=2
-    )
-    ax.add_patch(body)
-    bodies.append(body)
-
-    line_color = "tab:blue" if chirality[i] > 0 else "black"
-    line, = ax.plot([], [], lw=1.4, color=line_color, alpha=0.95, zorder=3)
-    heading_lines.append(line)
-
-    bot_north = []
-    bot_south = []
-
-    if P.show_magnets:
-        levers_i = rotate_points(LOCAL_ANCHORS, theta[i])
-        for k in range(P.Nmag):
-            center = pos[i] + levers_i[k]
-            ang = theta[i] + ALPHA[k] + phi[i, k]
-            deg = np.degrees(ang)
-
-            n_patch = Wedge(
-                tuple(center), P.r_mag, deg, deg + 180,
-                facecolor="royalblue", edgecolor="none", zorder=4
-            )
-            s_patch = Wedge(
-                tuple(center), P.r_mag, deg + 180, deg + 360,
-                facecolor="tomato", edgecolor="none", zorder=4
-            )
-
-            ax.add_patch(n_patch)
-            ax.add_patch(s_patch)
-            bot_north.append(n_patch)
-            bot_south.append(s_patch)
-
-    norths.append(bot_north)
-    souths.append(bot_south)
-
-ax.plot([], [], lw=5, color="royalblue", label="North pole")
-ax.plot([], [], lw=5, color="tomato", label="South pole")
-ax.plot([], [], lw=2, color="black", label="CW body line")
-ax.plot([], [], lw=2, color="tab:blue", label="CCW body line")
-ax.plot([], [], lw=2, color="green", label="Magnet interaction")
-ax.legend(loc="upper right", frameon=False, fontsize=8)
+def metric_neighbor_sets(pos, cutoff):
+    sets = [set() for _ in range(P.Nbots)]
+    for i, j in neighbor_pairs(pos, cutoff):
+        sets[i].add(j)
+        sets[j].add(i)
+    return sets
 
 
-def update_light_artists(t):
-    if P.light_mode == "homogeneous":
-        light1.set_visible(False)
-        light2.set_visible(False)
+def local_topological_order_r6(pos, cutoff=2.35):
+    """
+    Local sixfold/topological order parameter.
 
-    elif P.light_mode == "center_spot":
-        light1.center = (0, 0)
-        light1.set_visible(True)
-        light2.set_visible(False)
+    psi6_i = (1/N_i) sum_j exp(i*6*theta_ij)
+    r6 = mean_i |psi6_i|
 
-    elif P.light_mode == "moving_spot":
-        light1.center = tuple(moving_light_center(t))
-        light1.set_visible(True)
-        light2.set_visible(False)
+    High r6  -> crystal-like local hexagonal order
+    Low r6   -> liquid/gas/glass disorder
+    """
+    nsets = metric_neighbor_sets(pos, cutoff)
+    values = []
 
-    elif P.light_mode == "two_spots":
-        light1.center = tuple(moving_light_center(t))
-        light2.center = tuple(second_light_center(t))
-        light1.set_visible(True)
-        light2.set_visible(True)
+    for i, neigh in enumerate(nsets):
+        if len(neigh) < 2:
+            values.append(0.0)
+            continue
+
+        psi = 0.0 + 0.0j
+
+        for j in neigh:
+            dx, dy = pos[j] - pos[i]
+            angle = np.arctan2(dy, dx)
+            psi += np.exp(1j * 6.0 * angle)
+
+        psi /= len(neigh)
+        values.append(abs(psi))
+
+    return float(np.mean(values)), nsets
 
 
-def update(frame):
+def neighbor_change_rate(current_sets, previous_sets, dt_between_measurements):
+    """
+    Measures how rapidly neighbors change.
+
+    High value -> liquid-like rearrangement
+    Low value  -> solid/glass/crystal stable contacts
+    """
+    if previous_sets is None:
+        return 0.0
+
+    changes = []
+    for cur, prev in zip(current_sets, previous_sets):
+        changes.append(len(cur.symmetric_difference(prev)))
+
+    return float(np.mean(changes) / dt_between_measurements)
+
+
+def run_order_parameter_analysis():
     global pos, theta, phi
 
-    t = frame * P.dt
-    pos, theta, phi = step_dynamics(pos, theta, phi, t)
+    times = []
+    r6_values = []
+    nc_values = []
+    mean_light_values = []
 
-    I = light_intensity(pos, t)
-    update_light_artists(t)
+    previous_sets = None
 
-    title.set_text(
-        f"100 Spacious Moving Magbots | frame={frame} | light={P.light_mode} | "
-        f"mean I={np.mean(I):.2f}"
-    )
+    metric_every = 5
+    neighbor_cutoff = 2.35
+    dt_metric = P.dt * metric_every
 
-    artists = [title, light1, light2]
+    for frame in range(P.steps):
+        t = frame * P.dt
+        pos, theta, phi = step_dynamics(pos, theta, phi, t)
 
-    # interaction lines
-    if P.show_interaction_lines:
-        segs = compute_interaction_segments(pos, theta, phi, P.max_interaction_lines)
-        for idx, ln in enumerate(interaction_lines):
-            if idx < len(segs):
-                x1, y1, x2, y2, s = segs[idx]
-                alpha = min(0.90, 0.18 + 0.72 * s)
-                lw = 0.5 + 1.6 * s
-                ln.set_data([x1, x2], [y1, y2])
-                ln.set_alpha(alpha)
-                ln.set_linewidth(lw)
-                ln.set_color((0.0, 0.55, 0.0, alpha))
-            else:
-                ln.set_data([], [])
-            artists.append(ln)
-    else:
-        for ln in interaction_lines:
-            ln.set_data([], [])
-            artists.append(ln)
+        if frame % metric_every == 0:
+            r6, current_sets = local_topological_order_r6(pos, neighbor_cutoff)
+            nc = neighbor_change_rate(current_sets, previous_sets, dt_metric)
+            I = light_intensity(pos, t)
 
-    # bots
-    for i in range(P.Nbots):
-        bodies[i].center = tuple(pos[i])
-        artists.append(bodies[i])
+            times.append(t)
+            r6_values.append(r6)
+            nc_values.append(nc)
+            mean_light_values.append(float(np.mean(I)))
 
-        if P.show_heading_lines:
-            head = pos[i] + P.heading_line_scale * P.R_bot * np.array(
-                [np.cos(theta[i]), np.sin(theta[i])]
-            )
-            heading_lines[i].set_data([pos[i, 0], head[0]], [pos[i, 1], head[1]])
-        else:
-            heading_lines[i].set_data([], [])
-        artists.append(heading_lines[i])
+            previous_sets = current_sets
 
-        if P.show_magnets:
-            levers_i = rotate_points(LOCAL_ANCHORS, theta[i])
-            for k in range(P.Nmag):
-                center = pos[i] + levers_i[k]
-                ang = theta[i] + ALPHA[k] + phi[i, k]
-                deg = np.degrees(ang)
+    # Save CSV
+    with open("magbot_order_metrics.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["time", "r6", "neighbor_change_rate", "mean_light"])
+        writer.writerows(zip(times, r6_values, nc_values, mean_light_values))
 
-                norths[i][k].set_center(tuple(center))
-                norths[i][k].set_theta1(deg)
-                norths[i][k].set_theta2(deg + 180)
+    # Combined paper-style plot
+    fig, axes = plt.subplots(2, 1, figsize=(8, 6), sharex=True)
 
-                souths[i][k].set_center(tuple(center))
-                souths[i][k].set_theta1(deg + 180)
-                souths[i][k].set_theta2(deg + 360)
+    axes[0].plot(times, r6_values, linewidth=2)
+    axes[0].axhline(0.30, linestyle="--", linewidth=1)
+    axes[0].set_ylabel("Local topological\norder parameter $r_6$")
+    axes[0].set_title("Magbot structural order and neighbor change rate")
 
-                artists.append(norths[i][k])
-                artists.append(souths[i][k])
+    axes[1].plot(times, nc_values, linewidth=2)
+    axes[1].axhline(5.0, linestyle="--", linewidth=1)
+    axes[1].set_xlabel("Time")
+    axes[1].set_ylabel("Nearest-neighbor\nchange rate $n_c$")
 
-    return artists
+    plt.tight_layout()
+    plt.savefig("magbot_order_parameter_combined.png", dpi=200)
+    plt.show()
 
+    # Separate r6 plot
+    plt.figure(figsize=(8, 4))
+    plt.plot(times, r6_values, linewidth=2)
+    plt.axhline(0.30, linestyle="--", linewidth=1)
+    plt.xlabel("Time")
+    plt.ylabel("Local topological order parameter r6")
+    plt.title("Local topological order vs time")
+    plt.tight_layout()
+    plt.savefig("local_topological_order_r6.png", dpi=200)
+    plt.show()
 
-ani = FuncAnimation(
-    fig,
-    update,
-    frames=P.steps,
-    interval=P.interval_ms,
-    blit=False
-)
+    # Separate neighbor change plot
+    plt.figure(figsize=(8, 4))
+    plt.plot(times, nc_values, linewidth=2)
+    plt.axhline(5.0, linestyle="--", linewidth=1)
+    plt.xlabel("Time")
+    plt.ylabel("Nearest-neighbor change rate")
+    plt.title("Nearest-neighbor change rate vs time")
+    plt.tight_layout()
+    plt.savefig("neighbor_change_rate_nc.png", dpi=200)
+    plt.show()
+
+    print("Saved:")
+    print("magbot_order_metrics.csv")
+    print("magbot_order_parameter_combined.png")
+    print("local_topological_order_r6.png")
+    print("neighbor_change_rate_nc.png")
 
 
 # ============================================================
-# Optional saving
+# Main
 # ============================================================
 
-if P.save_video:
-    has_ffmpeg = shutil.which("ffmpeg") is not None
-
-    try:
-        fps = max(1, int(1.0 / P.dt))
-
-        if has_ffmpeg:
-            from matplotlib.animation import FFMpegWriter
-            ani.save(P.video_path, writer=FFMpegWriter(fps=fps))
-            print(f"[Saved video] {P.video_path}")
-
-        else:
-            from matplotlib.animation import PillowWriter
-            ani.save(P.gif_path, writer=PillowWriter(fps=min(fps, 30)))
-            print(f"[Saved GIF] {P.gif_path}")
-
-    except Exception as e:
-        print("Could not save animation:", e)
-
-plt.show()
-
+run_order_parameter_analysis()
