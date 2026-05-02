@@ -579,13 +579,13 @@ The cell-list method is important because the model contains both body-level and
 \end{keybox}
 
 \runin{Analysis metrics}
-The results are analyzed using two complementary metrics.
+The results are analyzed using two complementary structural metrics, whose mathematical definitions are given in Chapter~6. The first metric is a local sixfold order parameter, denoted $r_6$, which measures whether the neighbor directions around each Magbot resemble a locally ordered sixfold packing. The second metric is the nearest-neighbor change rate, denoted $n_c$, which measures how rapidly the neighbor list of each Magbot changes with time. Together these quantities separate static-looking order from genuine dynamical stability.
 
 \runin{Local topological order}
-The local topological order parameter measures the degree of local structural organization. A high value indicates a stable neighborhood arrangement or locally ordered structure. In the plots generated for this project, a threshold line near $0.30$ separates low-order gas-like or fluid-like states from more ordered regimes.
+The local topological order parameter measures the degree of local structural organization. A high value indicates that the neighbors of a particle are arranged in a preferred sixfold geometry, which is the natural local symmetry for circular particles and for the six-site Magbot design. In the plots generated for this project, a threshold line near $0.30$ is used as a practical visual separator between low-order gas-like or fluid-like states and more ordered regimes.
 
 \runin{Nearest-neighbor change rate}
-The nearest-neighbor change rate $n_c$ measures how frequently the local neighborhood of particles changes. A low value indicates arrested or solid-like behavior, while a high value indicates frequent bond breaking and rearrangement. In the plots, a threshold line near $n_c=5$ is used as a practical separator between relatively stable and actively reorganizing structures.
+The nearest-neighbor change rate $n_c$ measures how frequently the local neighborhood of particles changes. A low value indicates persistent contacts, which may occur in a crystal-like or arrested glass-like state, while a high value indicates frequent bond breaking and rearrangement. In the plots, a threshold line near $n_c=5$ is used as a practical separator between relatively stable and actively reorganizing structures.
 
 \runin{Mean squared displacement and repeated measurements}
 Mean squared displacement is used as a mobility metric. For a trajectory $\mathbf{x}_i(t)$, the time-origin averaged MSD is computed as
@@ -613,7 +613,7 @@ Regime & $N$ & box & $v_{\mathrm{base}}$ & $\omega_{\mathrm{base}}$ & $k_m$ & $r
 Regime & $N$ & box & $v_{\mathrm{base}}$ & $\omega_{\mathrm{base}}$ & $k_m$ & $r_0$ \\
 \midrule
 \endhead
-Active glass-like & 120 & 17.0 & 0.70 & 0.60 & 10.00 & 2.00 \\
+Active glass-like & 120 & 17.0 & 0.70 & 0.00 & 10.00 & 1.50 \\
 Active crystal & 170 & 17.0 & 10.45 & 6.90 & 10.00 & 5.00 \\
 Liquid-like & 100 & 20.0 & 8.00 & 7.00 & 1.15 & 1.40 \\
 Gas-like & 100 & 20.0 & 10.00 & 10.00 & 0.80 & 0.80 \\
@@ -626,7 +626,7 @@ Gas-like & 100 & 20.0 & 10.00 & 10.00 & 0.80 & 0.80 \\
 \chapter{Theory}
 
 \section{Active Brownian and Chiral Motion}
-A minimal active Brownian particle has the dynamics
+A minimal active Brownian particle has the dynamics commonly used to model self-propelled units in soft active matter \cite{marchetti2013hydrodynamics,bechinger2016active}:
 
 \begin{equation}
 \dot{\mathbf{x}} = v_0 \mathbf{n}(t) + \sqrt{2D_t}\,\bm{\eta}(t),
@@ -672,6 +672,87 @@ D_{\mathrm{eff}} = D_t + \frac{v_0^2}{2D_r}.
 \end{equation}
 
 In interacting Robo-Matter, this simple expression is modified by magnetic binding, confinement, collision, and collective rearrangement. However, the ballistic-to-diffusive idea remains useful for interpreting activity-driven spreading.
+
+\section{Structural Order and Neighbor-Exchange Theory}
+The phase classification in this project cannot be based only on visual snapshots. A final image can show clusters, but it cannot reveal whether those clusters are stable, flowing, or kinetically trapped. For this reason, two local diagnostics are used together with MSD: a sixfold local order parameter and a nearest-neighbor change parameter. The sixfold order metric is analogous to the bond-orientational order parameters commonly used for two-dimensional particle assemblies and active-particle systems \cite{bechinger2016active}. In the present simulation it is adapted to the Magbot geometry, where each body is circular and carries six magnetic sites.
+
+At a measurement time $t_m$, the neighbor set of Magbot $i$ is defined as
+
+\begin{equation}
+\mathcal{N}_i(t_m)=
+\left\{
+j\ne i:
+\left|\mathbf{x}_j(t_m)-\mathbf{x}_i(t_m)\right|
+\le r_{\mathrm{nn}}
+\right\},
+\end{equation}
+
+where $r_{\mathrm{nn}}$ is the analysis cutoff. In the project-generated parameter plots, $r_{\mathrm{nn}}=2.35$ is used. This cutoff is slightly larger than the hard body contact diameter, so it counts particles that are close enough to behave as local structural neighbors without counting distant particles that are not part of the same local arrangement.
+
+For every neighbor $j\in\mathcal{N}_i(t_m)$, the bond angle from particle $i$ to particle $j$ is
+
+\begin{equation}
+\alpha_{ij}(t_m)=
+\operatorname{atan2}
+\left(
+y_j(t_m)-y_i(t_m),
+x_j(t_m)-x_i(t_m)
+\right),
+\end{equation}
+
+where the two-argument arctangent preserves the correct quadrant of the bond direction. The complex sixfold local order around particle $i$ is then
+
+\begin{equation}
+\psi_6^{(i)}(t_m)=
+\frac{1}{N_i(t_m)}
+\sum_{j\in\mathcal{N}_i(t_m)}
+\exp\!\left[6\,\mathrm{i}\,\alpha_{ij}(t_m)\right],
+\qquad
+N_i(t_m)=|\mathcal{N}_i(t_m)|.
+\end{equation}
+
+If a particle has fewer than two neighbors, the simulation assigns $\psi_6^{(i)}=0$ because an isolated particle or a single pair cannot define a meaningful local angular structure. The factor of six makes the metric insensitive to rotations by $60^\circ$, which is appropriate for locally hexagonal packing and for six-site Magbot symmetry. The magnitude $|\psi_6^{(i)}|$ lies between zero and one. It approaches one when the local bond directions around particle $i$ are close to sixfold angular order, and it decreases when the neighbor directions are irregular.
+
+The scalar order parameter plotted in the report is the particle average
+
+\begin{equation}
+r_6(t_m)=
+\frac{1}{N}
+\sum_{i=1}^{N}
+\left|
+\psi_6^{(i)}(t_m)
+\right|.
+\end{equation}
+
+This definition deliberately averages the magnitude of the local order rather than the complex value itself. Therefore, different ordered domains with different absolute orientations do not cancel each other. This is important for Robo-Matter because the active glass-like and active-crystal states may contain locally ordered clusters whose global orientations are not identical. The metric therefore measures local structural organization, not perfect global crystallinity.
+
+The nearest-neighbor change parameter measures the time dependence of the same neighbor sets. Between two consecutive measurement times $t_{m-1}$ and $t_m$, the number of neighbor-list changes for particle $i$ is computed using the symmetric difference
+
+\begin{equation}
+C_i(t_m)=
+\left|
+\mathcal{N}_i(t_m)
+\triangle
+\mathcal{N}_i(t_{m-1})
+\right|,
+\end{equation}
+
+where $\triangle$ denotes the set of particles that are present in one neighbor set but not in the other. This counts both newly formed neighbors and lost neighbors. The project reports the average rate
+
+\begin{equation}
+n_c(t_m)=
+\frac{1}{N\,\Delta t_m}
+\sum_{i=1}^{N}
+C_i(t_m),
+\qquad
+\Delta t_m=t_m-t_{m-1}.
+\end{equation}
+
+In the code, the metric is evaluated every five simulation steps, so $\Delta t_m=5\Delta t$. The units of $n_c$ are neighbor-list changes per particle per unit simulation time. A large value means that particles are frequently exchanging local contacts, which is expected in liquid-like and gas-like states. A small value means that the local contact network is persistent, which can indicate an ordered crystal or an arrested glass. The distinction between these two cases comes from reading $n_c$ together with $r_6$ rather than using either metric alone.
+
+\begin{resultbox}{Why both parameters are required}
+A high value of $r_6$ alone does not prove that the system is a healthy active crystal, because a glass-like cluster can also have local order. Similarly, a high value of $n_c$ alone does not prove useful fluidity, because a gas-like state can have frequent contact changes without stable local structure. The physically meaningful classification comes from the pair $(r_6,n_c)$: active crystals show high order with neighbor exchange mainly during early annealing, active glasses show local order with suppressed rearrangement, liquids show persistent exchange with partial order, and gases show low order with mobile disorder.
+\end{resultbox}
 
 \section{Phase Interpretation}
 The phase behavior can be interpreted through a dimensionless qualitative ratio:
@@ -967,6 +1048,12 @@ Overall, the project shows that Robo-Matter behavior can emerge from local activ
 
 \bibitem{wang2024robomatter}
 J. Wang, G. Wang, H. Chen, Y. Liu, P. Wang, D. Yuan, X. Ma, X. Xu, Z. Cheng, B. Ji, M. Yang, J. Shuai, F. Ye, J. Wang, Y. Jiao, and L. Liu, ``Robo-Matter towards reconfigurable multifunctional smart materials,'' \textit{Nature Communications}, vol. 15, article 8853, 2024. doi: 10.1038/s41467-024-53123-6.
+
+\bibitem{marchetti2013hydrodynamics}
+M. C. Marchetti, J. F. Joanny, S. Ramaswamy, T. B. Liverpool, J. Prost, M. Rao, and R. A. Simha, ``Hydrodynamics of soft active matter,'' \textit{Reviews of Modern Physics}, vol. 85, pp. 1143--1189, 2013. doi: 10.1103/RevModPhys.85.1143.
+
+\bibitem{bechinger2016active}
+C. Bechinger, R. Di Leonardo, H. L\"owen, C. Reichhardt, G. Volpe, and G. Volpe, ``Active particles in complex and crowded environments,'' \textit{Reviews of Modern Physics}, vol. 88, article 045006, 2016. doi: 10.1103/RevModPhys.88.045006.
 
 \bibitem{btp2github}
 S. Kumar, ``Suraj BTP project: Robo-Matter duality,'' GitHub repository, 2026. Available: \url{https://github.com/suraj4556kumar-sketch/Robo_matter_duality/tree/main/BTP-2}.
