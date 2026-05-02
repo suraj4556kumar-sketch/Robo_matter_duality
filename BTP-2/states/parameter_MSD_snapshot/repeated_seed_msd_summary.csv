@@ -1,0 +1,5 @@
+phase,seed_count,final_msd_mean,final_msd_std,max_lag_time
+Active crystal,3,3.590238,0.317225,2.400000
+Active glass-like,3,2.616210,0.193197,2.400000
+Liquid-like,3,71.368152,3.597378,12.000000
+Gas-like,3,27.206993,11.589580,12.000000

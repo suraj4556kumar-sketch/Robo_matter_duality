@@ -29,7 +29,7 @@
 \usepackage{listings}
 \usepackage[hidelinks]{hyperref}
 
-\graphicspath{{states/}}
+\graphicspath{{states/}{states/parameter_MSD_snapshot/}}
 
 \definecolor{ReportBlue}{HTML}{1F4E79}
 \definecolor{SoftBlue}{HTML}{EAF2F8}
@@ -236,9 +236,9 @@ Finally, I thank my peers and well-wishers for their discussions, feedback, and 
 \addcontentsline{toc}{chapter}{Abstract}
 Reconfigurable multifunctional materials are an important frontier in modern physics, materials science, and robotics because they seek to combine structural adaptability with active, programmable behavior. Recent experimental work on Robo-Matter has shown that simple robotic building blocks, called Magbots, can exhibit both matter-like properties such as self-assembly, active crystalline order, and phase-like transitions, and robot-like properties such as smart healing, morphing, force output, and infiltration. These behaviors arise because each building block possesses active motion, tunable magnetic interaction, and coupling to an external programmable light field.
 
-This project develops a two-dimensional computational model of Robo-Matter using active magnetic disk particles inspired by Magbots. Each simulated Magbot is represented as a rigid circular body containing six magnetic sites around its perimeter. The particles possess position, body orientation, and internal magnet phase variables. Their dynamics combine self-propulsion, chiral rotation, light-field modulation, Gaussian light-gradient drift, soft steric repulsion, magnetic attraction, body torque, and internal magnet phase torque. A cell-list neighbor search is used to reduce unnecessary pairwise checks and make simulations of 100--150 Magbots computationally tractable.
+This project develops a two-dimensional computational model of Robo-Matter using active magnetic disk particles inspired by Magbots. Each simulated Magbot is represented as a rigid circular body containing six magnetic sites around its perimeter. The particles possess position, body orientation, and internal magnet phase variables. Their dynamics combine self-propulsion, chiral rotation, light-field modulation, Gaussian light-gradient drift, soft steric repulsion, magnetic attraction, body torque, and internal magnet phase torque. A cell-list neighbor search is used to reduce unnecessary pairwise checks and make simulations of 100--170 Magbots computationally tractable.
 
-The central physical question studied in this report is how collective organization emerges from the competition between activation, which agitates the system, and magnetic binding, which promotes local order. By varying activity, magnetic strength, interaction range, density, and noise, the simulation reproduces four representative phase-like regimes: active glass-like, active crystal, liquid-like, and gas-like states. The results are analyzed using local topological order and nearest-neighbor change rate, which together separate static ordering from dynamic rearrangement. The phase plots show that strong magnetic binding with moderate activity supports ordered active-crystal-like behavior, strong binding with insufficient rearrangement produces arrested glass-like behavior, intermediate activity produces liquid-like restructuring, and weak binding with high activity produces gas-like dispersion.
+The central physical question studied in this report is how collective organization emerges from the competition between activation, which agitates the system, and magnetic binding, which promotes local order. By varying activity, magnetic strength, interaction range, density, and noise, the simulation reproduces four representative phase-like regimes: active glass-like, active crystal, liquid-like, and gas-like states. The results are analyzed using local topological order, nearest-neighbor change rate, spatial snapshots, simulation videos, time-origin averaged mean squared displacement, and repeated random-seed MSD comparisons. This expanded evidence shows that strong magnetic binding with moderate activity supports ordered active-crystal-like behavior, strong binding with insufficient rearrangement produces arrested glass-like behavior, intermediate activity produces liquid-like restructuring with the largest displacement growth, and weak binding with high activity produces gas-like dispersion.
 
 Overall, the work shows that a simplified physics-inspired model can capture several essential features of Robo-Matter: programmable activation, collective ordering, dynamic bond rearrangement, self-organization, and phase-like transitions. The model is not an exact replica of the experimental system; rather, it is a compact computational platform for understanding the mechanisms by which simple active magnetic agents generate rich collective behavior. The project contributes a clear modelling framework, phase interpretation, parameter analysis, and simulation basis for future studies of adaptive robotic materials.
 
@@ -587,6 +587,18 @@ The local topological order parameter measures the degree of local structural or
 \runin{Nearest-neighbor change rate}
 The nearest-neighbor change rate $n_c$ measures how frequently the local neighborhood of particles changes. A low value indicates arrested or solid-like behavior, while a high value indicates frequent bond breaking and rearrangement. In the plots, a threshold line near $n_c=5$ is used as a practical separator between relatively stable and actively reorganizing structures.
 
+\runin{Mean squared displacement and repeated measurements}
+Mean squared displacement is used as a mobility metric. For a trajectory $\mathbf{x}_i(t)$, the time-origin averaged MSD is computed as
+
+\begin{equation}
+\mathrm{MSD}(\tau)=
+\left\langle
+\left|\mathbf{x}_i(t+\tau)-\mathbf{x}_i(t)\right|^2
+\right\rangle_{i,t},
+\end{equation}
+
+where the average is taken over particles and all valid starting times. This means that each MSD curve contains many repeated displacement measurements from the same phase trajectory. In addition, three independent random-seed simulations were run for each phase to compare the repeated-seed MSD trend and estimate the variability of the mobility result.
+
 \section{Simulation Cases}
 Representative parameter choices used in the project are summarized in Table~\ref{tab:phaseparams}. These values are extracted from the simulation scripts in the \texttt{states} folder.
 
@@ -601,10 +613,10 @@ Regime & $N$ & box & $v_{\mathrm{base}}$ & $\omega_{\mathrm{base}}$ & $k_m$ & $r
 Regime & $N$ & box & $v_{\mathrm{base}}$ & $\omega_{\mathrm{base}}$ & $k_m$ & $r_0$ \\
 \midrule
 \endhead
-Active glass-like & 150 & 20.0 & 0.45 & 0.50 & 5.80 & 4.00 \\
-Active crystal & 150 & 17.0 & 10.45 & 6.90 & 10.00 & 5.00 \\
-Liquid-like & 100 & 20.0 & 6.50 & 5.80 & 2.50 & 0.95 \\
-Gas-like & 100 & 28.0 & 10.00 & 10.00 & 0.80 & 0.80 \\
+Active glass-like & 120 & 17.0 & 0.70 & 0.60 & 10.00 & 2.00 \\
+Active crystal & 170 & 17.0 & 10.45 & 6.90 & 10.00 & 5.00 \\
+Liquid-like & 100 & 20.0 & 8.00 & 7.00 & 1.15 & 1.40 \\
+Gas-like & 100 & 20.0 & 10.00 & 10.00 & 0.80 & 0.80 \\
 \bottomrule
 \end{longtable}
 
@@ -698,78 +710,192 @@ The experimental paper reports that homogeneous light intensity can play a tempe
 % ------------------------------------------------------------
 \chapter{Results and Discussion}
 
-\section{Phase-State Results}
-The simulation produces four representative phase-like regimes. They are not thermodynamic phases in the strict equilibrium sense; they are nonequilibrium collective states distinguished by local order, bond rearrangement, density, and activity.
+\section{Expanded Evidence Set}
+The results are presented as a phase-by-phase analysis rather than as a short collection of final plots. Each phase is supported by four forms of evidence: a parameter plot showing local topological order and nearest-neighbor change rate, a spatial simulation snapshot showing the arrangement of Magbots, an MSD plot measuring mobility, and a linked simulation video showing the full time evolution. This is important because a single final frame can be misleading. A structure that looks ordered may still be dynamically rearranging, and a dispersed state may still have short-lived local contacts. The combined evidence therefore separates structure, motion, and time evolution.
+
+The phase labels used in this chapter follow the qualitative Robo-Matter terminology of Wang \textit{et al.} \cite{wang2024robomatter}. The present figures are project-generated simulation outputs and should be read as mechanism-level results, not as direct experimental calibration. The main purpose is to determine how magnetic binding, activity, density, and chirality combine to produce different nonequilibrium material states.
 
 \begin{table}[H]
 \centering
-\caption{Interpretation of the simulated phase-like regimes. The phase names follow the Robo-Matter terminology introduced in Ref.~\cite{wang2024robomatter}, while the signatures reported here are obtained from this project's simulations.}
-\label{tab:phaseinterpretation}
+\caption{Evidence included for each simulated Robo-Matter phase. The video links point to the BTP-2 GitHub folder.}
+\label{tab:phaseevidence}
 \begin{tabularx}{\textwidth}{>{\bfseries}p{3.0cm}X X}
 \toprule
-Regime & Structural signature & Dynamical signature \\
+Regime & Plots and snapshots used in the report & Simulation video \\
 \midrule
-Active glass-like & Locally connected or jammed structure with limited ability to rearrange globally. & Neighbor-change rate decays; motion becomes arrested. \\
-Active crystal & High local order and stable neighborhood structure. & Defects are annealed; neighbor changes fall below threshold. \\
-Liquid-like & Partial local order with continuous restructuring. & Neighbor changes remain frequent; bonds form and break. \\
-Gas-like & Low topological order and mostly separated particles or small clusters. & Particles remain mobile and disordered. \\
+Active crystal & Parameter trace, spatial snapshot, MSD curve, repeated-seed MSD comparison. & \href{\btptwogithub/states/simulation/active_crystal_like.mp4}{\texttt{active\_crystal\_like.mp4}} \\
+Active glass-like & Parameter trace, spatial snapshot, MSD curve, repeated-seed MSD comparison. & \href{\btptwogithub/states/simulation/active_glass.mp4}{\texttt{active\_glass.mp4}} \\
+Liquid-like & Parameter trace, spatial snapshot, MSD curve, repeated-seed MSD comparison. & \href{\btptwogithub/states/simulation/liquid_like.mp4}{\texttt{liquid\_like.mp4}} \\
+Gas-like & Parameter trace, spatial snapshot, MSD curve, repeated-seed MSD comparison. & \href{\btptwogithub/states/simulation/gas_like.mp4}{\texttt{gas\_like.mp4}} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\runin{Active crystal phase}
-The active crystal simulation uses strong magnetic binding and sufficiently high motion to allow reorganization. Figure~\ref{fig:activecrystal} shows that the local topological order rises rapidly from a low value to above $0.8$ and remains high for most of the simulated time. The nearest-neighbor change rate initially spikes, corresponding to active rearrangement and defect correction, but then decreases below the threshold line.
+\begin{notebox}{How the plots should be read}
+The order parameter and neighbor-change plot describes structural organization and bond rearrangement. The snapshot shows whether the structure is clustered, connected, or dispersed at a representative time. The MSD plot measures how far particles move on average as the lag time increases. The video link is included so that the plotted interpretation can be checked against the actual time evolution.
+\end{notebox}
+
+\section{Active Crystal Regime}
+The active crystal regime is obtained when strong magnetic binding is combined with enough activity to remove defects. The parameter plot in Figure~\ref{fig:activecrystalparam} shows the clearest structural ordering among the four phases. The local topological order rises quickly from the threshold region to values near $0.9$, and after the initial transient it remains high. The nearest-neighbor change rate is initially large because the Magbots are still searching for compatible local arrangements, but it then falls mostly below the practical threshold. This combination is the signature of an actively annealed ordered state: mobility is present early, but the final neighborhood structure becomes stable.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.92\textwidth]{active_crystal_phase.png}
-\caption{Project-generated active-crystal simulation output. The local topological order rapidly becomes high, while the nearest-neighbor change rate decreases after initial rearrangement. The phase label is used in the qualitative sense of Ref.~\cite{wang2024robomatter}.}
-\label{fig:activecrystal}
+\includegraphics[width=0.94\textwidth]{active_crystal_parameter.png}
+\caption{Project-generated active-crystal parameter plot. The local topological order rises rapidly and remains high, while the nearest-neighbor change rate decreases after the initial rearrangement stage.}
+\label{fig:activecrystalparam}
 \end{figure}
 
-\begin{resultbox}{Result highlight: active crystal}
-The active crystal is produced when magnetic binding is strong but the system still has enough motion to anneal defects. In physical terms, activity is not merely destructive; at moderate levels it helps the system escape local disorder and settle into a more ordered state.
+The snapshot in Figure~\ref{fig:activecrystalsnap} confirms that this high order is not merely a numerical artifact. The Magbots form extended locally connected structures, and many units participate in larger clusters rather than remaining isolated. The moving light spot does not simply disperse the system. Instead, it helps generate local rearrangement while magnetic interactions preserve contacts. The important physical point is that activity can improve order when binding is strong enough to retain local structure. In this regime, activity plays an annealing role.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{active_crystal_snapshot.png}
+\caption{Project-generated active-crystal snapshot. The Magbots form connected locally ordered assemblies, showing that the high order parameter corresponds to visible collective organization.}
+\label{fig:activecrystalsnap}
+\end{figure}
+
+The active-crystal MSD in Figure~\ref{fig:activecrystalmsd} is much smaller than the liquid-like MSD. The curve increases with oscillatory features rather than showing smooth long-range spreading. This is consistent with particles moving within a constrained ordered network. The repeated-seed analysis in Figure~\ref{fig:repeatedseedmsd} gives a final MSD mean of about $3.59$ at the maximum lag used for this phase, with a standard deviation of about $0.32$ across three seeds. Thus the active crystal is not immobile, but its displacement is strongly bounded compared with the fluid phases.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{active_crystal_MSD.png}
+\caption{Project-generated active-crystal MSD plot. The bounded MSD growth indicates constrained motion inside an ordered network rather than free spreading.}
+\label{fig:activecrystalmsd}
+\end{figure}
+
+\begin{resultbox}{Interpretation of the active crystal}
+The active crystal is the best example of constructive activity in this project. Activity is strong enough to let defects relax, while magnetic interaction is strong enough to stabilize local order. The result is not a passive crystal, but an active ordered material that continues to move internally while preserving its collective structure.
 \end{resultbox}
 
-\runin{Active glass-like phase}
-The active glass-like case corresponds to strong attraction and low activity. Figure~\ref{fig:activeglass} shows a gradual increase in order and a decay of neighbor changes. The key distinction from an ideal active crystal is that rearrangement becomes suppressed before the system can fully explore configuration space. This is characteristic of a kinetically arrested state.
+\clearpage
+\section{Active Glass-Like Regime}
+The active glass-like regime is produced when binding is strong but activity is too weak to allow complete structural relaxation. Figure~\ref{fig:activeglassparam} shows that the order parameter rises gradually and eventually reaches a high value, but the neighbor-change rate rapidly collapses toward zero. The system therefore develops local structure but loses the ability to reorganize. This is the central difference between the glass-like and crystal-like regimes. Both can have local order, but the glass-like phase is dynamically arrested.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.92\textwidth]{active_glass_like.png}
-\caption{Project-generated active glass-like simulation output. The system develops local organization, but the nearest-neighbor change rate decays strongly, indicating arrested dynamics and reduced ability to reorganize. The phase label follows the qualitative terminology of Ref.~\cite{wang2024robomatter}.}
-\label{fig:activeglass}
+\includegraphics[width=0.94\textwidth]{active_glass_parameter.png}
+\caption{Project-generated active glass-like parameter plot. Local order increases, but the nearest-neighbor change rate decays toward zero, indicating kinetic arrest.}
+\label{fig:activeglassparam}
 \end{figure}
 
-In the Robo-Matter interpretation, the glass-like state is not simply ``low order.'' It may contain local order but lacks sufficient rearrangement to remove defects or produce a clean crystalline structure. This agrees with the general physical idea that glassiness is associated with kinetic arrest.
-
-\runin{Liquid-like phase}
-The liquid-like simulation uses activity comparable to magnetic binding. Figure~\ref{fig:liquidlike} shows that local order grows gradually and eventually crosses the practical threshold, but the neighbor-change rate remains large and fluctuating. This is the defining signature of liquid-like behavior: local coordination exists, but bonds do not remain fixed.
+The snapshot in Figure~\ref{fig:activeglasssnap} shows several compact clusters separated by empty regions. The clusters are not random isolated particles, so the state is not gas-like. However, the structure also does not form one clean extended crystal across the domain. The picture is therefore consistent with local binding and partial organization, but with insufficient rearrangement to merge or anneal all domains into a more ordered state.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.92\textwidth]{liquid_like.png}
-\caption{Project-generated liquid-like simulation output. Local order develops only gradually, while the nearest-neighbor change rate remains substantial. The phase label is used by analogy with the Robo-Matter regimes reported in Ref.~\cite{wang2024robomatter}.}
-\label{fig:liquidlike}
+\includegraphics[width=0.88\textwidth]{active_glass_snapshot.png}
+\caption{Project-generated active glass-like snapshot. The system contains locally organized clusters, but the arrangement remains domain-like and kinetically constrained.}
+\label{fig:activeglasssnap}
 \end{figure}
 
-The liquid-like state is important because it demonstrates that collective organization need not be static. The particles can form temporary clusters and networks while continuously exchanging neighbors. This is similar to ordinary liquids, but here the motion is sustained by active drive rather than thermal equilibrium alone.
-
-\runin{Gas-like phase}
-In the gas-like regime, activity is high and magnetic attraction is weak. Figure~\ref{fig:gaslike} shows that the local topological order remains near zero and well below the threshold. Neighbor-change rate fluctuates because particles continue to encounter and separate from one another, but sustained binding is absent.
+The MSD plot in Figure~\ref{fig:activeglassmsd} increases more smoothly than the active-crystal MSD, but the displacement remains small on the same short-lag scale. The repeated-seed summary gives a final MSD mean of about $2.62$ with standard deviation about $0.19$ for this phase. The low variation across seeds suggests that the constrained mobility is a robust outcome of the selected glass-like parameters. The physical interpretation is that particles can move locally, but strong binding and low activation prevent large-scale restructuring.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.92\textwidth]{gas_like_phase.png}
-\caption{Project-generated gas-like simulation output. The order parameter remains very low, indicating absence of stable collective organization. Motion and weak binding lead to dispersed, disordered behavior. The phase label follows the qualitative framework of Ref.~\cite{wang2024robomatter}.}
-\label{fig:gaslike}
+\includegraphics[width=0.88\textwidth]{active_glass_MSD.png}
+\caption{Project-generated active glass-like MSD plot. The slow growth of MSD is consistent with restricted motion inside a kinetically arrested clustered state.}
+\label{fig:activeglassmsd}
 \end{figure}
 
-\section{Comparative Interpretation}
-Figures~\ref{fig:activecrystal}--\ref{fig:gaslike} use the same visual format, axes, and diagnostic quantities, so they can be compared directly without shrinking the plots into a small multi-panel layout. The main simulation result is that changing the balance between activity, binding, and density changes the emergent Robo-Matter state.
+\begin{resultbox}{Interpretation of the active glass-like state}
+The glass-like state proves why order alone is not enough for phase classification. The system can look locally organized while still being dynamically poor. Its defining feature is not the absence of structure; it is the loss of rearrangement before the structure can anneal into a cleaner crystal.
+\end{resultbox}
 
-\runin{Interpretation using order and dynamics}
-The two selected metrics should be interpreted together. A high order parameter alone does not prove that the system is a good crystal, because a jammed state may also have local order. Similarly, a high neighbor-change rate alone does not prove disorder, because a liquid may have local structure while still rearranging. The useful classification is obtained by combining them:
+\clearpage
+\section{Liquid-Like Regime}
+The liquid-like regime is obtained when activity and binding become comparable. In Figure~\ref{fig:liquidparam}, the order parameter starts low and rises gradually, crossing the practical threshold only after a long transient. At the same time, the nearest-neighbor change rate remains high and fluctuating around the threshold. This is the clearest evidence of a flowing active material: local contacts exist, but they are continuously created and destroyed.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.94\textwidth]{liquid_parameter.png}
+\caption{Project-generated liquid-like parameter plot. Local order grows slowly, while neighbor exchange remains persistent throughout the simulation.}
+\label{fig:liquidparam}
+\end{figure}
+
+The snapshot in Figure~\ref{fig:liquidsnap} supports the same interpretation. The Magbots are not as uniformly isolated as in the gas-like case; small pairs and short clusters are visible. However, the system does not form large stable domains like the active crystal or glass-like cases. This intermediate spatial structure is exactly what is expected for a liquid-like active material. It has short-lived local coordination but no permanent network.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{liquid_snapshot.png}
+\caption{Project-generated liquid-like snapshot. The configuration contains transient pairs and small clusters rather than a stable extended assembly.}
+\label{fig:liquidsnap}
+\end{figure}
+
+The MSD result in Figure~\ref{fig:liquidmsd} is the strongest mobility result in the project. The curve grows to about $66$ for the representative run, much larger than the active-crystal or active-glass values. Small oscillations appear because the motion is chiral and because repeated encounters modify the displacement growth, but the overall trend is strongly increasing. The repeated-seed study gives a final MSD mean of about $71.37$ with standard deviation about $3.60$, showing that high mobility is repeatable across the tested seeds. This confirms that the liquid-like phase is not just visually disordered; it is dynamically fluid.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{liquid_MSD.png}
+\caption{Project-generated liquid-like MSD plot. The large MSD growth demonstrates sustained displacement and fluid-like rearrangement.}
+\label{fig:liquidmsd}
+\end{figure}
+
+\begin{resultbox}{Interpretation of the liquid-like state}
+The liquid-like regime is the most useful state for adaptive reconfiguration. It preserves enough interaction to create temporary structure, but it remains mobile enough to flow, search, and reorganize. For Robo-Matter applications, this regime is important because it lies between rigid order and complete dispersion.
+\end{resultbox}
+
+\clearpage
+\section{Gas-Like Regime}
+The gas-like regime appears when activity dominates over magnetic binding. Figure~\ref{fig:gasparam} shows that the local topological order remains far below the threshold. The nearest-neighbor change rate remains active and fluctuating because particles continue to collide and separate, but these encounters do not produce stable structural order. This distinguishes the gas-like phase from the liquid-like phase: both are mobile, but only the liquid-like phase develops meaningful local coordination.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.94\textwidth]{gas_parameter.png}
+\caption{Project-generated gas-like parameter plot. The order parameter remains very low while neighbor exchange stays active, indicating mobile disorder.}
+\label{fig:gasparam}
+\end{figure}
+
+The snapshot in Figure~\ref{fig:gassnap} shows a widely dispersed configuration. Most Magbots are isolated or only briefly close to another unit. The moving light region changes local activation, but weak magnetic binding is insufficient to create stable clusters. This visual evidence agrees with the low order parameter and confirms that the gas-like state is structurally sparse.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{gas_snapshot.png}
+\caption{Project-generated gas-like snapshot. The Magbots remain widely dispersed, with little evidence of stable collective organization.}
+\label{fig:gassnap}
+\end{figure}
+
+The gas-like MSD in Figure~\ref{fig:gasmsd} grows substantially, reaching about $41$ in the representative run. Its repeated-seed mean is about $27.21$, but the standard deviation is large, about $11.59$. This larger variability is physically reasonable because the gas-like regime is more sensitive to boundary encounters, initial positions, and chance collisions. The state is mobile, but its motion is less collectively regulated than the liquid-like state. Thus gas-like behavior should not be interpreted as a useful flowing material; it is better described as active dispersion.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{gas_MSD.png}
+\caption{Project-generated gas-like MSD plot. The MSD grows because particles remain mobile, but the parameter plot and snapshot show that this mobility is not accompanied by stable ordering.}
+\label{fig:gasmsd}
+\end{figure}
+
+\begin{resultbox}{Interpretation of the gas-like state}
+The gas-like phase is an activity-dominated state. It is mobile, but it lacks useful cohesion. In a Robo-Matter context, this phase may help spread agents through space, but by itself it does not provide stable material functionality.
+\end{resultbox}
+
+\clearpage
+\section{Repeated-Seed MSD and Cross-Phase Comparison}
+To address repeatability, each phase was simulated for three random seeds using the MSD scripts. The resulting mean and standard-deviation envelopes are shown in Figure~\ref{fig:repeatedseedmsd}. This repeated-seed analysis does not replace a full phase diagram, but it gives an important check that the qualitative mobility ranking is not based on one accidental trajectory. The liquid-like phase consistently shows the largest displacement growth, the active crystal and active glass-like phases remain constrained, and the gas-like phase shows mobile but more variable behavior.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{repeated_seed_msd_summary.png}
+\caption{Project-generated repeated-seed MSD comparison. Each phase was repeated for seeds 7, 17, and 29. The curve shows the mean MSD and the shaded region shows one standard deviation.}
+\label{fig:repeatedseedmsd}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Final repeated-seed MSD values at the maximum lag used for each phase.}
+\label{tab:repeatedseedsummary}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3.2cm}cccX}
+\toprule
+Regime & Seeds & Maximum lag & Final MSD mean & Interpretation \\
+\midrule
+Active crystal & 3 & 2.40 & 3.59 & Ordered and mobile only within a constrained network. \\
+Active glass-like & 3 & 2.40 & 2.62 & Most dynamically restricted among the tested phase classes. \\
+Liquid-like & 3 & 12.00 & 71.37 & Strong repeated mobility with persistent rearrangement. \\
+Gas-like & 3 & 12.00 & 27.21 & Mobile but highly seed-dependent and structurally disordered. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The repeated-seed MSD comparison separates two ideas that can otherwise be confused. The gas-like state is disordered and mobile, but its final MSD varies strongly across seeds. The liquid-like state is also mobile, but its mobility is more consistently high in the repeated runs. This difference matters for robotic material design. If the goal is controlled reconfiguration, a liquid-like state is more useful than a gas-like state because it combines mobility with interaction. If the goal is rapid dispersal, the gas-like state may be useful, but it sacrifices cohesion.
+
+The active crystal and glass-like curves are plotted over a shorter maximum lag because their simulations use a smaller time step. Both remain in a low-MSD range compared with the liquid and gas cases. The difference between them is therefore not mainly the magnitude of MSD. It lies in the relation between structure and rearrangement. The active crystal reaches high order after an early rearrangement stage, while the glass-like system becomes locally ordered but dynamically arrested.
 
 \begin{table}[H]
 \centering
@@ -787,8 +913,7 @@ Low order, low $n_c$ & Frozen disordered state or insufficient motion. & Deep gl
 \end{tabularx}
 \end{table}
 
-\runin{Physical mechanism of transitions}
-The transition sequence can be understood as:
+The evidence from Figures~\ref{fig:activecrystalparam}--\ref{fig:gasmsd} can be summarized as a competition between binding and agitation. Strong binding with enough activity produces an active crystal. Strong binding with too little rearrangement produces a glass-like arrested state. Comparable binding and activity produces a flowing liquid-like state. Weak binding under high activity produces an active gas.
 
 \begin{equation}
 \begin{aligned}
@@ -802,20 +927,19 @@ The transition sequence can be understood as:
 \end{aligned}
 \end{equation}
 
-The first transition is subtle. A small increase in activity can improve order by allowing particles to escape trapped local configurations. However, too much activity breaks bonds faster than they can stabilize, producing liquid-like or gas-like behavior.
-
-\runin{Comparison with experimental Robo-Matter}
-The computational results are qualitatively consistent with the experimental Robo-Matter phase concept. In the experimental system, homogeneous light intensity affects Magbot rotation speed and plays a temperature-like role, while magnetic binding stabilizes assemblies \cite{wang2024robomatter}. The present simulation reproduces the same conceptual competition. It also includes a moving light field, allowing light-guided drift and activity modulation.
-
-Important differences remain. The simulation does not model motor electronics, brush friction, real magnetic rod geometry, camera feedback, LED pixel control, or exact contact mechanics. Therefore, numerical values should not be interpreted as direct experimental predictions. The value of the model lies in mechanism-level understanding.
+The first transition is subtle and important. A small increase in activity can improve order by allowing particles to escape trapped local configurations. However, too much activity breaks bonds faster than they can stabilize, producing liquid-like or gas-like behavior. This is why activity should not be described only as ``noise'' or ``temperature.'' In active Robo-Matter, activity is also a mechanism of search, defect correction, and controlled reconfiguration.
 
 \section{Model Assessment}
 The model is useful because it is physically interpretable: every term in the update rule corresponds to activity, force, torque, noise, or environmental control. It includes both translational and rotational dynamics, treats the internal magnet phases as active variables rather than fixed labels, reproduces four distinct collective regimes under parameter changes, and remains extendable because local neighbor search keeps the computation manageable.
 
-The model is also deliberately simplified. The magnetic potential is not a full dipole-field calculation, friction and vibration-motor dynamics are represented phenomenologically, and the light-field drift is a compact control approximation rather than a detailed photo-electromechanical model. The order metrics are useful for this first study, but stronger quantitative phase classification would require longer simulations, multiple random seeds, additional structural metrics, and direct comparison with experimental datasets.
+The model is also deliberately simplified. The magnetic potential is not a full dipole-field calculation, friction and vibration-motor dynamics are represented phenomenologically, and the light-field drift is a compact control approximation rather than a detailed photo-electromechanical model. The repeated-seed MSD analysis improves the reliability of the mobility interpretation, but stronger quantitative phase classification would still require longer simulations, more random seeds, additional structural metrics, and direct comparison with experimental datasets.
 
 \section{Discussion}
-The main scientific outcome of the project is the demonstration that Robo-Matter-like behavior can be generated from simple local rules. The simulations support the idea that active robotic materials should be understood as nonequilibrium many-body systems. Activity is not only a source of disorder; it can also enable reconfiguration, defect repair, and transition between states. Magnetic binding is not only a source of stability; if too strong relative to motion, it can arrest the system in a glass-like configuration. The useful operating regime for adaptive material behavior lies between these extremes.
+The main scientific outcome of the project is the demonstration that Robo-Matter-like behavior can be generated from simple local rules and then classified through multiple diagnostics. The earlier version of the result could be read as four example plots. The expanded analysis shows a more complete story: the same model produces visibly different structures, different order-parameter histories, different neighbor-exchange behavior, different MSD growth, and different repeated-seed mobility trends.
+
+The most important physical conclusion is that the useful Robo-Matter regime is not located at the extremes. If magnetic binding dominates too strongly, the system becomes arrested. If activity dominates too strongly, the system disperses. Between these limits, activity can be constructive. It can help Magbots rearrange, repair defects, and explore configurations while magnetic interactions preserve local cohesion. This balance is what makes active robotic matter different from both ordinary passive materials and ordinary robot swarms.
+
+The simulation videos are also scientifically useful because they show the temporal path to each final state. The active crystal video shows clustering and rearrangement before stabilization. The active glass video shows local cluster formation followed by reduced rearrangement. The liquid-like video shows continual bond exchange, and the gas-like video shows dispersed motion. These video observations agree with the quantitative plots and strengthen the phase interpretation.
 
 % ------------------------------------------------------------
 % Chapter 8
@@ -823,15 +947,17 @@ The main scientific outcome of the project is the demonstration that Robo-Matter
 \chapter{Conclusion}
 
 \section{Summary, Limitations, and Future Directions}
-This project developed a two-dimensional simulation framework for Robo-Matter inspired by active magnetic Magbot systems. Each Magbot was represented as a rigid circular disk with six magnetic sites, chiral rotation, active translational motion, light-field modulation, magnetic force, internal magnet torque, body torque, noise, steric repulsion, and reflecting boundaries. The simulation was implemented in Python and used cell-list neighbor search for efficiency.
+This project developed a two-dimensional simulation framework for Robo-Matter inspired by active magnetic Magbot systems. Each Magbot was represented as a rigid circular disk with six magnetic sites, chiral rotation, active translational motion, light-field modulation, magnetic force, internal magnet torque, body torque, noise, steric repulsion, and reflecting boundaries. The simulation was implemented in Python and used cell-list neighbor search for efficient local interaction evaluation.
 
-The report followed the structure of a formal thesis study: introduction, literature review, rationale, objectives, methods, theory, results, discussion, conclusion, references, and appendices. The core results were organized around four phase-like regimes: active glass-like, active crystal, liquid-like, and gas-like.
+The main contribution of the thesis is not only that four representative Robo-Matter states were generated, but that those states were interpreted using several mutually supporting diagnostics. The final results chapter includes structural order and neighbor-change plots, spatial snapshots, MSD curves, repeated-seed MSD comparisons, and links to phase videos. This gives a stronger basis for classification than a small number of final figures. The active crystal is identified by high local order and reduced neighbor exchange after an initial rearrangement stage. The active glass-like state is identified by increasing local order combined with a collapse of neighbor exchange, indicating kinetic arrest. The liquid-like state is identified by persistent neighbor exchange and the largest repeated-seed MSD growth. The gas-like state is identified by very low order, dispersed snapshots, and mobile but seed-sensitive MSD growth.
 
-The main findings can be summarized as follows. Strong magnetic binding with moderate activity supports ordered active-crystal-like behavior, whereas strong binding with insufficient rearrangement produces arrested glass-like behavior. When activity and binding become comparable, the system behaves like a liquid-like network in which bonds form and break persistently. When activity is high and magnetic binding is weak, the system becomes gas-like and dispersed. Across these cases, local topological order and nearest-neighbor change rate form a useful diagnostic pair because they separate static order from active rearrangement.
+The results show that activity has a dual role. At moderate levels it improves ordering by allowing particles to escape local traps and anneal defects. At high levels, or when binding is too weak, it destroys sustained contacts and produces gas-like dispersion. Magnetic interaction also has a dual role. It is necessary for material-like cohesion, but if the system cannot rearrange, strong binding can freeze the structure into a glass-like state. The useful adaptive regime therefore lies between rigid arrest and complete dispersion, where the system keeps enough cohesion to act like a material while retaining enough mobility to reconfigure.
 
-The project contributes a transparent computational platform for studying Robo-Matter. It connects experimental ideas from Magbot-based smart materials with explicit equations of motion and interpretable simulation outputs. Its limitations are the simplified magnetic potential, phenomenological light response, absence of detailed hardware mechanics, and limited statistical sampling. Future work should therefore perform systematic parameter sweeps over magnetic strength, activity, density, and noise; compute additional order parameters such as bond-orientational order, cluster-size distribution, radial distribution function, and MSD; use multiple random seeds; add feedback-controlled light fields; study different magnet symmetries and mixed chirality; and compare simulated phase diagrams more directly with experimental Robo-Matter data.
+The repeated-seed MSD analysis strengthens the mobility interpretation. For three seeds, the liquid-like phase gives the largest final MSD mean, about $71.37$ at the maximum lag, while the active crystal and active glass-like phases remain below $4$ on their shorter lag interval. The gas-like state remains mobile but has a much larger seed-to-seed variation, which reflects its sensitivity to initial conditions, boundary encounters, and transient collisions. This comparison supports the conclusion that liquid-like Robo-Matter is a more controlled reconfigurable state than gas-like dispersal.
 
-Robo-Matter is a powerful example of how material behavior can emerge from active, interacting building blocks. This project shows that even a simplified simulation can reproduce meaningful collective regimes and explain them through the balance of activity, magnetic binding, and dynamic rearrangement. The work therefore provides both a computational model and a conceptual bridge between active matter physics and reconfigurable robotic materials.
+The limitations of the model should be kept clear. The magnetic interaction is simplified, the light response is phenomenological, the contact mechanics are not a full hardware model, and the current repeated-seed study is still small. The plots should therefore be interpreted as qualitative and mechanism-level evidence. Future work should extend the repeated-seed analysis to larger ensembles, perform systematic parameter sweeps, compute bond-orientational order, radial distribution functions, cluster-size distributions, and long-time MSD exponents, and compare the simulated phase boundaries more directly with experimental Robo-Matter measurements.
+
+Overall, the project shows that Robo-Matter behavior can emerge from local active magnetic rules without prescribing global order. The thesis demonstrates how ordered, arrested, flowing, and dispersed states arise from the same model by changing the balance between activity and binding. This provides a useful computational bridge between active matter physics and reconfigurable robotic materials, and it gives a clear foundation for future studies on feedback control, adaptive morphing, and programmable material response.
 
 % ------------------------------------------------------------
 % References
@@ -959,13 +1085,15 @@ for frame in range(steps):
 File & Role in the report \\
 \midrule
 \texttt{robo\_matter.pdf} & Explanation of Magbot variables, forces, torque, light field, and parameter meaning. \\
-\texttt{Research Papers/s41467-024-53123-6...pdf} & Primary research paper on experimental Robo-Matter. \\
-\texttt{states/active\_crystal\_phase.py} & Parameter set and code basis for active crystal simulation. \\
-\texttt{states/active\_glass\_like.py} & Parameter set and code basis for glass-like simulation. \\
-\texttt{states/liquid\_like.py} & Parameter set and code basis for liquid-like simulation. \\
-\texttt{states/gas\_like\_phase.py} & Parameter set and code basis for gas-like simulation. \\
-\texttt{states/*.png} & Figures included in the results section. \\
-\href{\btptwogithub/states/first_video.mp4}{\texttt{states/first\_video.mp4}} & Simulation video stored with the project material. \\
+\texttt{s41467-024-53123-6...pdf} & Primary research paper on experimental Robo-Matter, stored in the \texttt{Research Papers} folder. \\
+\texttt{states/code\_phases/*.py} & Phase simulation scripts for active crystal, active glass-like, liquid-like, and gas-like regimes. \\
+\texttt{states/MSD/*.py} & MSD scripts used to compute time-origin averaged displacement curves and repeated-seed MSD comparisons. \\
+\texttt{parameter\_MSD\_snapshot/*.png} & Parameter plots, spatial snapshots, MSD plots, and repeated-seed MSD summary included in the results section. \\
+\texttt{repeated\_seed\_msd\_summary.csv} & Numerical summary of repeated-seed MSD final values used in Table~\ref{tab:repeatedseedsummary}. \\
+\href{\btptwogithub/states/simulation/active_crystal_like.mp4}{\texttt{active\_crystal\_like.mp4}} & Active-crystal simulation video. \\
+\href{\btptwogithub/states/simulation/active_glass.mp4}{\texttt{active\_glass.mp4}} & Active glass-like simulation video. \\
+\href{\btptwogithub/states/simulation/liquid_like.mp4}{\texttt{liquid\_like.mp4}} & Liquid-like simulation video. \\
+\href{\btptwogithub/states/simulation/gas_like.mp4}{\texttt{gas\_like.mp4}} & Gas-like simulation video. \\
 \href{\btptwogithub}{BTP-2 GitHub folder} & Online repository folder containing the BTP-2 report, code, figures, and supporting material. \\
 \bottomrule
 \end{tabularx}
