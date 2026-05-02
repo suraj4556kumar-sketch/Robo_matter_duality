@@ -53,7 +53,7 @@ class Params:
     light_drift_strength: float = 1.20
 
     # Chiral rotation
-    omega_base: float = 0.60
+    omega_base: float = 0.0
     omega_light_gain: float = 0.20
 
     # Noise
@@ -68,8 +68,8 @@ class Params:
 
     # Magnetic interaction
     k_m: float = 10.00
-    r0: float = 2.00
-    r_cut: float = 2.80
+    r0: float = 1.50
+    r_cut: float = 1.80
 
     # Steric repulsion
     k_rep: float = 200.0
