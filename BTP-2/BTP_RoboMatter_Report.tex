@@ -125,7 +125,7 @@
   showstringspaces=false
 }
 
-\newcommand{\projecttitle}{Simulation and Analysis of Robo-Matter: Active Magnetic Magbots with Chiral Dynamics and Light-Field Control}
+\newcommand{\projecttitle}{Simulation and Analysis of Robo-Matter: Active Brownian Particles with Chiral Dynamics and Magnetic Interactions}
 \newcommand{\studentname}{Suraj}
 \newcommand{\rollnumber}{22PH23011}
 \newcommand{\supervisor}{Prof. Pintu Patra}
@@ -140,43 +140,53 @@
 % ------------------------------------------------------------
 % Title page
 % ------------------------------------------------------------
+\newgeometry{top=1.15cm,bottom=1.15cm,left=2.0cm,right=2.0cm}
 \begin{titlepage}
   \centering
-  \vspace*{0.5cm}
-  {\Large\textbf{\institute}\par}
-  \vspace{0.3cm}
-  {\large \department\par}
-  \vspace{1.2cm}
-  {\color{ReportBlue}\rule{\textwidth}{1.2pt}\par}
-  \vspace{0.5cm}
-  {\Huge\bfseries\color{ReportBlue}\projecttitle\par}
-  \vspace{0.5cm}
-  {\color{ReportBlue}\rule{\textwidth}{1.2pt}\par}
-  \vspace{1.2cm}
+  \thispagestyle{empty}
+  \setstretch{1.05}
+  \vspace*{-0.35cm}
 
-  {\Large Bachelor Thesis Project Report\par}
+  {\large\bfseries \projecttitle\par}
+
+  \vspace{1.05cm}
+  {Bachelor's Thesis Project - Report submitted to\par}
   \vspace{0.35cm}
-  {\large submitted in partial fulfilment of the requirements for the award of the degree of\par}
+  {\institute\par}
   \vspace{0.35cm}
-  {\Large\textbf{Integrated BS--MS Course in Physics}\par}
+  {in partial fulfilment for the award of the degree of\par}
+  \vspace{0.35cm}
+  {Integrated BS--MS Course\par}
+  \vspace{0.25cm}
+  {in\par}
+  \vspace{0.25cm}
+  {Physics\par}
+
+  \vspace{0.85cm}
+  {by\par}
+  \vspace{0.25cm}
+  {\large\bfseries \studentname\par}
+  \vspace{0.18cm}
+  {(\rollnumber)\par}
+
+  \vspace{0.72cm}
+  {Under the supervision of\par}
+  \vspace{0.22cm}
+  {\large\bfseries \supervisor\par}
+
+  \vspace{0.45cm}
+  \includegraphics[width=2.75cm]{iit_kgp_logo.png}\par
 
   \vfill
-
-  \begin{tcolorbox}[width=0.74\textwidth,colback=SoftGray,colframe=ReportBlue!30]
-    \centering
-    \begin{tabular}{>{\bfseries}r l}
-      Submitted by: & \studentname \\
-      Roll number: & \rollnumber \\
-      Supervised by: & \supervisor \\
-      Semester: & \semester \\
-      Date: & \submissiondate \\
-      GitHub: & \href{\btptwogithub}{BTP-2 project folder}
-    \end{tabular}
-  \end{tcolorbox}
-
-  \vfill
-  {\large Kharagpur, India\par}
+  {\department\par}
+  \vspace{0.15cm}
+  {\institute\par}
+  \vspace{0.55cm}
+  {\semester\par}
+  \vspace{0.15cm}
+  {\submissiondate\par}
 \end{titlepage}
+\restoregeometry
 
 \pagenumbering{roman}
 \pagestyle{fancy}
