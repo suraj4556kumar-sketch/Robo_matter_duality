@@ -377,7 +377,9 @@ Literature connection & The simulated mechanisms and phase terminology are compa
 \chapter{Materials and Methods}
 
 \section{Model Formulation}
-The simulation represents Robo-Matter as a collection of rigid circular particles in a square two-dimensional domain. Each particle is a Magbot-like unit with a body center, body angle, and six magnetic sites arranged around its perimeter. The system is evolved using an overdamped discrete-time update, appropriate for a strongly dissipative robotic or granular environment where inertia is not the dominant modelling feature.
+The simulation represents Robo-Matter as a collection of rigid circular particles in a square two-dimensional domain. Each particle is a Magbot-like unit with a body center, body angle, and six magnetic sites arranged around its perimeter. This chapter consolidates the BTP--1 model formulation and extends it into the full BTP--2 simulation used for phase analysis. The method therefore begins with rigid-body geometry and overdamped active Brownian motion, then adds the mechanisms needed for Robo-Matter: chirality, magnetic binding, light-field activation, steric exclusion, internal magnet rotation, and reflecting-wall confinement.
+
+The physical assumption behind the numerical method is that the Magbots move in a strongly dissipative environment. In such a system, velocity relaxes quickly compared with the time scale of collective rearrangement, so inertia is not treated as an independent state variable. Forces and torques directly determine increments in position, body angle, and internal magnet phase through an Euler-Maruyama update.
 
 \begin{figure}[H]
 \centering
@@ -410,6 +412,37 @@ The simulation represents Robo-Matter as a collection of rigid circular particle
 \label{fig:schematic}
 \end{figure}
 
+\runin{Rigid-body magnetic geometry}
+Each simulated Magbot is treated as a rigid disk of radius $R_{\mathrm{bot}}$. The six magnetic sites are mounted on an inner ring of radius
+
+\begin{equation}
+R_a = R_{\mathrm{bot}}-\delta_{\mathrm{rim}},
+\end{equation}
+
+where $\delta_{\mathrm{rim}}$ is the small rim inset from the outer body boundary. In the simulation scripts this same radius is stored as $R_{\mathrm{ring}}$. The six sites are equally spaced around the body, so their body-frame angles are
+
+\begin{equation}
+\alpha_k=\frac{2\pi(k-1)}{N_{\mathrm{mag}}},
+\qquad
+k=1,\ldots,N_{\mathrm{mag}},\qquad
+N_{\mathrm{mag}}=6.
+\end{equation}
+
+Because the body is rigid, the world-space position of site $k$ on Magbot $i$ is
+
+\begin{equation}
+\mathbf{R}_{ik}(t)=
+\mathbf{x}_i(t)+
+R_a
+\begin{bmatrix}
+\cos(\theta_i(t)+\alpha_k)\\
+\sin(\theta_i(t)+\alpha_k)
+\end{bmatrix}.
+\label{eq:siteposition}
+\end{equation}
+
+Equation~\ref{eq:siteposition} is the geometric bridge between the particle-level active Brownian description and the Magbot-specific magnetic interaction, because all magnetic forces are evaluated between these moving site positions rather than between featureless particle centers.
+
 \runin{State variables}
 For the $i$th Magbot, the main state variables are:
 
@@ -425,17 +458,50 @@ Here $\mathbf{x}_i$ is the body-center position, $\theta_i$ is the body orientat
 \psi_{ik} = \theta_i + \alpha_k + \phi_{ik}.
 \end{equation}
 
-The six fixed anchor points are placed at radius $R_{\mathrm{ring}}$ from the center:
+The six fixed anchor points in the body frame are equivalently written as
 
 \begin{equation}
 \mathbf{a}_k =
-R_{\mathrm{ring}}
+R_a
 \begin{bmatrix}
 \cos \alpha_k \\ \sin \alpha_k
 \end{bmatrix},
-\qquad
-\alpha_k = \frac{2\pi(k-1)}{N_{\mathrm{mag}}}.
 \end{equation}
+
+The unit magnetic moment associated with that site is
+
+\begin{equation}
+\mathbf{m}_{ik}=
+\begin{bmatrix}
+\cos \psi_{ik}\\
+\sin \psi_{ik}
+\end{bmatrix}.
+\label{eq:magmoment}
+\end{equation}
+
+\runin{Minimal active Brownian limit}
+If magnetic interaction, light-gradient drift, and body torque are switched off, the model reduces to a chiral active Brownian particle:
+
+\begin{equation}
+\dot{\mathbf{x}}_i=v_0\mathbf{n}_i+\sqrt{2D_t}\,\bm{\eta}_i(t),
+\qquad
+\dot{\theta}_i=\omega_0+\sqrt{2D_r}\,\xi_i(t),
+\label{eq:minimalabp}
+\end{equation}
+
+where $\mathbf{n}_i=(\cos\theta_i,\sin\theta_i)$. The corresponding Euler-Maruyama updates are
+
+\begin{equation}
+\theta_i(t+\Delta t)=\theta_i(t)+\omega_0\Delta t+\sqrt{2D_r\Delta t}\,Z_{r,i},
+\end{equation}
+
+\begin{equation}
+\mathbf{x}_i(t+\Delta t)=
+\mathbf{x}_i(t)+v_0\Delta t\,\mathbf{n}_i(t)
++\sqrt{2D_t\Delta t}\,(Z_{x,i},Z_{y,i}),
+\end{equation}
+
+with independent standard normal random variables $Z_{r,i}$, $Z_{x,i}$, and $Z_{y,i}$. This limiting case is the theoretical basis for the MSD discussion in Chapter~6. The full BTP--2 model keeps the same overdamped structure but replaces the constant speed and angular velocity by light-dependent and interaction-dependent terms.
 
 \runin{Light field}
 The simulation uses a Gaussian light field to represent a programmable activation pattern. For a light center $\mathbf{x}_L(t)$, the intensity at position $\mathbf{x}$ is
@@ -485,23 +551,27 @@ I_{\mathrm{spot}}
 This rule is not intended as a full electromechanical model of the real photoresistor-motor coupling. It is a compact way to represent light-guided activation and migration.
 
 \runin{Magnetic interaction}
-Each Magbot has six magnetic sites. For a pair of magnetic sites separated by vector $\mathbf{r}$ and distance $r$, the simulation uses the simplified interaction energy
+Each Magbot has six magnetic sites. For two magnetic sites, $a=(i,k)$ and $b=(j,l)$, the separation vector is $\mathbf{r}_{ab}=\mathbf{R}_{ik}-\mathbf{R}_{jl}$ and $r_{ab}=|\mathbf{r}_{ab}|$. The simplified magnetic energy is
 
 \begin{equation}
 U_{ab} =
--k_m \exp\left(-\frac{r^2}{r_0^2}\right)
-\cos(\Delta\psi),
+-k_m
+\left(\mathbf{m}_{ik}\cdot\mathbf{m}_{jl}\right)
+\exp\left(-\frac{r_{ab}^2}{r_0^2}\right)
+=
+-k_m \cos(\Delta\psi)
+\exp\left(-\frac{r_{ab}^2}{r_0^2}\right),
 \end{equation}
 
-where $k_m$ is magnetic strength, $r_0$ is the decay scale, and $\Delta\psi$ is the relative magnet-angle difference. The interaction is evaluated only when $r<r_{\mathrm{cut}}$.
+where $k_m$ is magnetic strength, $r_0$ is the decay scale, and $\Delta\psi=\psi_{ik}-\psi_{jl}$ is the relative magnet-angle difference. The interaction is evaluated only when $r_{ab}<r_{\mathrm{cut}}$.
 
 The force contribution is obtained from the gradient of this potential. In the implemented form,
 
 \begin{equation}
 \mathbf{F}_{ab} =
 \frac{2k_m}{r_0^2}
-\exp\left(-\frac{r^2}{r_0^2}\right)
-\cos(\Delta\psi)\,\mathbf{r}.
+\exp\left(-\frac{r_{ab}^2}{r_0^2}\right)
+\cos(\Delta\psi)\,\mathbf{r}_{ab}.
 \end{equation}
 
 The internal magnet phase torque is
@@ -509,7 +579,7 @@ The internal magnet phase torque is
 \begin{equation}
 \tau_{\phi} =
 k_m
-\exp\left(-\frac{r^2}{r_0^2}\right)
+\exp\left(-\frac{r_{ab}^2}{r_0^2}\right)
 \sin(\Delta\psi).
 \end{equation}
 
@@ -520,11 +590,11 @@ When a magnetic force acts away from the body center, it also creates body torqu
 \end{equation}
 
 \runin{Steric repulsion and collision handling}
-To prevent unphysical overlap, a hard-core repulsive force is applied when two disks overlap. If $d_{ij}$ is the center-to-center distance,
+To prevent unphysical overlap, a hard-core repulsive force is applied when two disks overlap. If $d_{ij}=|\mathbf{x}_i-\mathbf{x}_j|$ is the center-to-center distance and $\hat{\mathbf{r}}_{ij}=(\mathbf{x}_i-\mathbf{x}_j)/d_{ij}$ points from particle $j$ to particle $i$, then
 
 \begin{equation}
-\mathbf{F}_{\mathrm{rep}} =
--k_{\mathrm{rep}}(2R_{\mathrm{bot}}-d_{ij})\hat{\mathbf{r}}_{ij},
+\mathbf{F}_{\mathrm{rep},ij} =
+k_{\mathrm{rep}}(2R_{\mathrm{bot}}-d_{ij})\hat{\mathbf{r}}_{ij},
 \qquad d_{ij}<2R_{\mathrm{bot}}.
 \end{equation}
 
@@ -609,6 +679,26 @@ Mean squared displacement is used as a mobility metric. For a trajectory $\mathb
 
 where the average is taken over particles and all valid starting times. This means that each MSD curve contains many repeated displacement measurements from the same phase trajectory. In addition, three independent random-seed simulations were run for each phase to compare the repeated-seed MSD trend and estimate the variability of the mobility result.
 
+\runin{Control parameters}
+The phase behavior is controlled by a small set of physically interpretable parameters. Activity is represented by the translational speed, intrinsic chiral rotation, and the light-dependent gains. Binding is represented mainly by the magnetic strength and magnetic interaction range. Density is set by the number of Magbots and the square-box size. Noise controls how strongly individual trajectories fluctuate around the deterministic active and interaction-driven motion.
+
+\begin{table}[H]
+\centering
+\caption{Control-parameter groups connecting the BTP--1 model specification to the BTP--2 phase analysis.}
+\label{tab:controlgroups}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3.1cm}p{4.5cm}X}
+\toprule
+Group & Main symbols & Physical role \\
+\midrule
+Activity & $v_{\mathrm{base}}$, $\omega_{\mathrm{base}}$, $\gamma$, $\beta$ & Sets active agitation, chiral circulation, and light-driven reconfiguration. \\
+Binding & $k_m$, $r_0$, $r_{\mathrm{cut}}$ & Controls how strongly and how far magnetic sites attract and align. \\
+Density & $N/L^2$ & Determines collision frequency, cluster formation probability, and confinement effects. \\
+Noise & $D_t$, $D_r$, $D_\phi$ & Represents stochastic translational, rotational, and internal magnetic fluctuations. \\
+Boundaries & $L$ and reflecting walls & Keeps the system finite and makes wall encounters part of the observed dynamics. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \section{Simulation Cases}
 Representative parameter choices used in the project are summarized in Table~\ref{tab:phaseparams}. These values are extracted from the simulation scripts in the \texttt{states} folder.
 
@@ -629,6 +719,10 @@ Liquid-like & 100 & 20.0 & 8.00 & 7.00 & 1.15 & 1.40 \\
 Gas-like & 100 & 20.0 & 10.00 & 10.00 & 0.80 & 0.80 \\
 \bottomrule
 \end{longtable}
+
+\begin{notebox}{Continuity with theory}
+Chapter~5 defines the numerical model that is actually integrated in the simulations. Chapter~6 then interprets this model theoretically. The MSD expression in Chapter~6 corresponds to the non-interacting limit of Eq.~\ref{eq:minimalabp}, while deviations from that ideal behavior in Chapter~7 are caused by magnetic binding, crowding, boundaries, and collective neighbor exchange. This ordering keeps the report continuous: model construction leads to theory, and theory leads to measurable results.
+\end{notebox}
 
 % ------------------------------------------------------------
 % Chapter 6
@@ -1181,6 +1275,7 @@ for frame in range(steps):
 \toprule
 File & Role in the report \\
 \midrule
+\texttt{suraj\_report (2) (1).pdf} & BTP--1 report used to strengthen and reorganize the model formulation in Chapter~5, especially rigid-body geometry, overdamped updates, interaction terms, boundary handling, MSD definition, and control-parameter grouping. \\
 \texttt{robo\_matter.pdf} & Explanation of Magbot variables, forces, torque, light field, and parameter meaning. \\
 \texttt{s41467-024-53123-6...pdf} & Primary research paper on experimental Robo-Matter, stored in the \texttt{Research Papers} folder. \\
 \texttt{states/code\_phases/*.py} & Phase simulation scripts for active crystal, active glass-like, liquid-like, and gas-like regimes. \\
